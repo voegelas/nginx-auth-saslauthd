@@ -1,0 +1,212 @@
+#!/usr/bin/env perl
+
+use Mojolicious::Lite;
+use Mojo::Util qw(b64_decode);
+use IO::Socket::Timeout;
+use IO::Socket::UNIX;
+
+our $VERSION = '0.001';
+
+sub get_saslauthd_settings_from_nginx {
+    my $c = shift;
+
+    my $h = $c->req->headers;
+    my %opt;
+    $opt{socket} = $h->header('X-Saslauthd-Path') // '/var/run/saslauthd/mux';
+    $opt{realm}        = $h->header('X-Saslauthd-Realm')   // q{};
+    $opt{service_name} = $h->header('X-Saslauthd-Service') // 'nginx';
+    $opt{timeout}      = $h->header('X-Saslauthd-Timeout') // 5;
+    return \%opt;
+}
+
+sub auth_cyrus {
+    my ( $login, $pw, %opt ) = @_;
+
+    my $service = $opt{service_name};
+    my $timeout = $opt{timeout};
+    my $path    = $opt{socket};
+    my $realm   = $opt{realm};
+
+    my $sock = IO::Socket::UNIX->new( Type => SOCK_STREAM, Peer => $path )
+        or die qq{socket: $!};
+    IO::Socket::Timeout->enable_timeouts_on($sock);
+    $sock->read_timeout($timeout);
+    $sock->write_timeout($timeout);
+    my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw, $service, $realm;
+    defined $sock->send($cred) or die qq{send: $!};
+    defined $sock->recv( my $n, 2 ) or die qq{recv: $!};
+    defined $sock->recv( my $reply, unpack 'n', $n ) or die qq{recv: $!};
+    close $sock;
+    return substr( $reply, 0, 2 ) eq 'OK';
+}
+
+get '/auth-basic' => sub {
+    my $c = shift;
+
+    my $h = $c->req->headers;
+    my $auth = $h->authorization // q{};
+    if ( substr( $auth, 0, 6 ) eq 'Basic ' ) {
+        my $cred = b64_decode( substr $auth, 6 ) // q{};
+        my ( $login, $pw ) = split /:/, $cred, 2;
+        if ( defined $login && defined $pw ) {
+            my $opt = get_saslauthd_settings_from_nginx($c);
+            if ( auth_cyrus( $login, $pw, %{$opt} ) ) {
+                return $c->render( status => 200, text => 'OK' );
+            }
+        }
+    }
+
+    my $realm = $h->header('X-Realm') // 'Restricted';
+    $c->res->headers->www_authenticate(qq{Basic realm="$realm"});
+    $c->res->headers->cache_control('no-cache');
+    return $c->render( status => 401, text => 'Unauthorized' );
+};
+
+app->start;
+__END__
+
+=head1 NAME
+
+nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
+
+=head1 VERSION
+
+This documentation refers to nginx-auth-saslauthd version 0.001.
+
+=head1 USAGE
+
+=head2 NGINX
+
+    location /private {
+        auth_request /auth-basic;
+    }
+
+    location = /auth-basic {
+        proxy_pass http://127.0.0.1:8888;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Realm "Restricted";
+        proxy_set_header X-Saslauthd-Path "/var/run/saslauthd/mux";
+        allow 127.0.0.1;
+        allow ::1;
+    }
+
+=head2 SASLAUTHD
+
+Enable caching of authentication credentials by passing the B<-c> switch to
+saslauthd.
+
+On Ubuntu, install the sasl2-bin package. Enable and configure the saslauthd
+daemon in /etc/default/saslauthd.
+
+Create /etc/saslauthd.conf if saslauthd uses LDAP.
+
+    ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
+    ldap_start_tls: yes
+    ldap_search_base: OU=Users,DC=EXAMPLE,DC=COM
+    ldap_filter: (sAMAccountName=%u)
+    ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
+    ldap_password: secret
+
+Create /etc/pam.d/nginx if saslauthd uses PAM.
+
+    @include common-auth
+    @include common-account
+
+=head2 SYSTEMD
+
+Create a system user. On Ubuntu, add the user to the sasl group.
+
+    useradd -r -M -d /nonexistent -s /bin/false -G sasl -U www-auth
+
+Create /lib/systemd/system/nginx-auth-saslauthd.service and enable the daemon
+with systemctl.
+
+    [Unit]
+    Description=Basic authentication with saslauthd
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=www-auth
+    ExecStart=/usr/local/bin/nginx-auth-saslauthd daemon -m production \
+              -l http://127.0.0.1:8888
+
+    [Install]
+    WantedBy=multi-user.target
+
+=head1 DESCRIPTION
+
+nginx-auth-saslauthd is an authentication daemon for use with the
+ngx_http_auth_request_module. The daemon supports Basic authentication and
+verifies users with saslauthd.
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+The below headers can be passed from nginx to the authentication daemon.
+
+=over 4
+
+=item B<X-Realm>
+
+The realm for Basic authentication. Defaults to "Restricted".
+
+=item B<X-Saslauthd-Path>
+
+The path to the saslauthd socket. Defaults to "/var/run/saslauthd/mux".
+
+=item B<X-Saslauthd-Timeout>
+
+A timeout when writing to and reading from the socket. Defaults to 5 seconds.
+
+=item B<X-Saslauthd-Service>
+
+The SASL service name. Defaults to "nginx".
+
+=item B<X-Saslauthd-Realm>
+
+The SASL realm. Defaults to the empty string.
+
+=back
+
+=head1 DEPENDENCIES
+
+Requires Mojolicious, IO::Socket::Timeout, IO::Socket::UNIX and saslauthd.
+
+=head1 INCOMPATIBILITIES
+
+None known.
+
+=head1 SEE ALSO
+
+Mojolicious, saslauthd(8),
+L<https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
+
+=head1 AUTHOR
+
+Andreas Voegele E<lt>voegelas@cpan.orgE<gt>
+
+=head1 BUGS AND LIMITATIONS
+
+Basic authentication doesn't encrypt the credentials. Protect the data
+communication with HTTPS.
+
+Please report any bugs to the author.
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2017 Andreas Voegele
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+=cut
