@@ -1,9 +1,8 @@
 # nginx-auth-saslauthd
 
 This nginx utility verifies web users with Basic authentication and saslauthd.
-Authentication requests are forwarded from nginx to the program with the
-[auth_request](https://nginx.org/en/docs/http/ngx_http_auth_request_module.html)
-directive.
+Authentication requests are forwarded from nginx to the utility with
+[auth_request](https://nginx.org/en/docs/http/ngx_http_auth_request_module.html).
 
 ```Nginx
 location /private {
@@ -49,7 +48,7 @@ git clone https://github.com/voegelas/nginx-auth-saslauthd.git
 
 ## LICENSE AND COPYRIGHT
 
-Copyright 2017 Andreas Voegele
+Copyright 2017 Andreas Vögele
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the ISC license.
