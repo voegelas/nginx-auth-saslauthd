@@ -77,7 +77,7 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
 
 =head2 NGINX
 
-    location /private {
+    location /private/ {
         auth_request /auth-basic;
     }
 
@@ -89,6 +89,7 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
         proxy_set_header X-Saslauthd-Path "/var/run/saslauthd/mux";
         allow 127.0.0.1;
         allow ::1;
+        deny all;
     }
 
 =head2 SASLAUTHD
@@ -99,7 +100,7 @@ saslauthd.
 On Ubuntu, install the sasl2-bin package. Enable and configure the saslauthd
 daemon in /etc/default/saslauthd.
 
-Create /etc/saslauthd.conf if saslauthd uses LDAP.
+If saslauthd uses LDAP, create /etc/saslauthd.conf.
 
     ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
     ldap_start_tls: yes
@@ -108,7 +109,7 @@ Create /etc/saslauthd.conf if saslauthd uses LDAP.
     ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
     ldap_password: secret
 
-Create /etc/pam.d/nginx if saslauthd uses PAM.
+If saslauthd uses PAM, create /etc/pam.d/nginx.
 
     @include common-auth
     @include common-account
@@ -139,7 +140,8 @@ with systemctl.
 
 nginx-auth-saslauthd is an authentication daemon for use with the
 ngx_http_auth_request_module. The daemon supports Basic authentication and
-verifies users with saslauthd.
+verifies users with saslauthd. The saslauthd daemon can authenticate users
+against the shadow database, PAM, LDAP and so on.
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
