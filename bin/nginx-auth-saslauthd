@@ -146,7 +146,7 @@ nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
 program supports Basic authentication and verifies users with LDAP, PAM or
 other mechanisms supported by saslauthd.
 
-=head1 CONFIGURATION AND ENVIRONMENT
+=head1 CONFIGURATION
 
 The below headers can be passed from nginx to the authentication daemon.
 
