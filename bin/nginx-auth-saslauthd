@@ -115,6 +115,11 @@ If saslauthd uses PAM, create /etc/pam.d/nginx.
     @include common-auth
     @include common-account
 
+Check your setup with testsaslauthd.
+
+    unset HISTFILE
+    /usr/sbin/testsaslauthd -s nginx -u $USER -p 'your password'
+
 =head2 SYSTEMD
 
 Create a new user. On Ubuntu, add the user to the sasl group.
