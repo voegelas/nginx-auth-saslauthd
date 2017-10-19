@@ -7,7 +7,7 @@ use IO::Socket::UNIX;
 
 our $VERSION = '0.001';
 
-sub get_saslauthd_settings_from_nginx {
+sub get_saslauthd_settings {
     my $c = shift;
 
     my $h = $c->req->headers;
@@ -49,7 +49,7 @@ get '/auth-basic' => sub {
         my $cred = b64_decode( substr $auth, 6 ) // q{};
         my ( $login, $pw ) = split /:/, $cred, 2;
         if ( defined $login && defined $pw ) {
-            my $opt = get_saslauthd_settings_from_nginx($c);
+            my $opt = get_saslauthd_settings($c);
             if ( auth_cyrus( $login, $pw, %{$opt} ) ) {
                 return $c->render( status => 200, text => 'OK' );
             }
