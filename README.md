@@ -11,7 +11,7 @@ location /private/ {
 }
 
 location = /auth {
-    proxy_pass http://unix:/run/nginx-auth.sock:/auth-basic;
+    proxy_pass http://unix:/run/nginx-auth/http.sock:/auth-basic;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header X-Realm "Restricted";
