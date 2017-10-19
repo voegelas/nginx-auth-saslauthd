@@ -1,17 +1,17 @@
 # nginx-auth-saslauthd
 
-This nginx utility verifies web users with Basic authentication and saslauthd.
-The saslauthd daemon can authenticate users against the shadow database, PAM,
-LDAP and so on. Authentication requests are forwarded from nginx with
+This nginx utility verifies web users with Basic authentication and LDAP, PAM
+or other mechanisms supported by saslauthd. Authentication requests are
+forwarded from nginx with
 [auth_request](https://nginx.org/en/docs/http/ngx_http_auth_request_module.html).
 
 ```Nginx
-location /private {
-    auth_request /auth-basic;
+location /private/ {
+    auth_request /auth;
 }
 
-location = /auth-basic {
-    proxy_pass http://127.0.0.1:8888;
+location = /auth {
+    proxy_pass http://unix:/run/nginx-auth.sock:/auth-basic;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header X-Realm "Restricted";

@@ -78,11 +78,11 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
 =head2 NGINX
 
     location /private/ {
-        auth_request /auth-basic;
+        auth_request /auth;
     }
 
-    location = /auth-basic {
-        proxy_pass http://127.0.0.1:8888;
+    location = /auth {
+        proxy_pass http://127.0.0.1:8008/auth-basic;
         proxy_pass_request_body off;
         proxy_set_header Content-Length "";
         proxy_set_header X-Realm "Restricted";
@@ -111,12 +111,13 @@ If saslauthd uses LDAP, create /etc/saslauthd.conf.
 
 If saslauthd uses PAM, create /etc/pam.d/nginx.
 
+    #%PAM-1.0
     @include common-auth
     @include common-account
 
 =head2 SYSTEMD
 
-Create a system user. On Ubuntu, add the user to the sasl group.
+Create a new user. On Ubuntu, add the user to the sasl group.
 
     useradd -r -M -d /nonexistent -s /bin/false -G sasl -U www-auth
 
@@ -131,17 +132,19 @@ with systemctl.
     Type=simple
     User=www-auth
     ExecStart=/usr/local/bin/nginx-auth-saslauthd daemon -m production \
-              -l http://127.0.0.1:8888
+              -l http://127.0.0.1:8008
 
     [Install]
     WantedBy=multi-user.target
 
+From version 7.27 on Mojolicious supports UNIX domain sockets in addition to
+TCP sockets.
+
 =head1 DESCRIPTION
 
-nginx-auth-saslauthd is an authentication daemon for use with the
-ngx_http_auth_request_module. The daemon supports Basic authentication and
-verifies users with saslauthd. The saslauthd daemon can authenticate users
-against the shadow database, PAM, LDAP and so on.
+nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
+program supports Basic authentication and verifies users with LDAP, PAM or
+other mechanisms supported by saslauthd.
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -181,7 +184,7 @@ None known.
 
 =head1 SEE ALSO
 
-Mojolicious, saslauthd(8),
+Mojolicious, Mojolicious::Guides::Cookbook, saslauthd(8),
 L<https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
 
 =head1 AUTHOR
@@ -190,8 +193,8 @@ Andreas Voegele E<lt>voegelas@cpan.orgE<gt>
 
 =head1 BUGS AND LIMITATIONS
 
-Basic authentication doesn't encrypt the credentials. Protect the data
-communication with HTTPS.
+Basic authentication doesn't encrypt the credentials. Protect your site with
+HTTPS.
 
 Please report any bugs to the author.
 
