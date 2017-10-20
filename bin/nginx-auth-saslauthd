@@ -124,7 +124,7 @@ Check your setup with testsaslauthd.
 
 Create a new user. On Ubuntu, add the user to the sasl group.
 
-    useradd -r -M -d /nonexistent -s /bin/false -G sasl -U www-auth
+    useradd -r -M -d /nonexistent -s /bin/false -G sasl -U nginx-auth
 
 Create /lib/systemd/system/nginx-auth-saslauthd.service and enable the daemon
 with systemctl.
@@ -135,7 +135,7 @@ with systemctl.
 
     [Service]
     Type=simple
-    User=www-auth
+    User=nginx-auth
     ExecStart=/usr/local/bin/nginx-auth-saslauthd daemon -m production \
               -l http://127.0.0.1:8008
 
