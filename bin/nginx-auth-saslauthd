@@ -105,7 +105,7 @@ If saslauthd uses LDAP, create /etc/saslauthd.conf.
     ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
     ldap_start_tls: yes
     ldap_tls_cacert_file: /etc/ssl/certs/EXAMPLE-ADS-CA.pem
-    lpap_tls_check_peer: yes
+    ldap_tls_check_peer: yes
     ldap_search_base: OU=Users,DC=EXAMPLE,DC=COM
     ldap_filter: (sAMAccountName=%U)
     ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
