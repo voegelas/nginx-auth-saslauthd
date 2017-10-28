@@ -62,7 +62,7 @@ sub auth_cyrus {
 sub authorized {
     my ( $c, $reply ) = @_;
 
-    return $c->render( status => 200, text => $reply );
+    return $c->render( status => 200, text => $reply, format => 'txt' );
 }
 
 sub unauthorized {
@@ -71,13 +71,13 @@ sub unauthorized {
     my $realm = $c->req->headers->header('X-Realm') // 'Restricted';
     $c->res->headers->www_authenticate(qq{Basic realm="$realm"});
     $c->res->headers->cache_control('no-cache');
-    return $c->render( status => 401, text => $reply );
+    return $c->render( status => 401, text => $reply, format => 'txt' );
 }
 
 sub error {
     my ( $c, $err ) = @_;
 
-    return $c->render( status => 503, text => $err );
+    return $c->render( status => 503, text => $err, format => 'txt' );
 }
 
 get '/auth-basic' => sub {
