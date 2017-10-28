@@ -5,7 +5,7 @@ language: generic
 
 install:
   - sudo apt-get -qq update
-  - sudo apt-get -y install libmojolicious-perl libio-socket-timeout-perl sasl2-bin curl
+  - sudo apt-get -y install libmojolicious-perl sasl2-bin curl
   - sudo sed -i 's/^START=no/START=yes/' /etc/default/saslauthd
   - sudo service saslauthd start
   - sudo useradd -s /bin/false -G sasl nginx-auth
