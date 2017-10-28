@@ -28,14 +28,14 @@ sub auth_cyrus {
     my $realm   = $opt{realm};
 
     my $sock = IO::Socket::UNIX->new( Type => SOCK_STREAM, Peer => $path )
-        or die qq{socket: $!};
+        or die qq{$path: $!};
     IO::Socket::Timeout->enable_timeouts_on($sock);
     $sock->read_timeout($timeout);
     $sock->write_timeout($timeout);
     my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw, $service, $realm;
-    defined $sock->send($cred) or die qq{send: $!};
-    defined $sock->recv( my $n, 2 ) or die qq{recv: $!};
-    defined $sock->recv( my $reply, unpack 'n', $n ) or die qq{recv: $!};
+    defined $sock->send($cred) or die qq{$path: $!};
+    defined $sock->recv( my $n, 2 ) or die qq{$path: $!};
+    defined $sock->recv( my $reply, unpack 'n', $n ) or die qq{$path: $!};
     close $sock;
     return substr( $reply, 0, 2 ) eq 'OK';
 }
@@ -50,8 +50,11 @@ get '/auth-basic' => sub {
         my ( $login, $pw ) = split /:/, $cred, 2;
         if ( defined $login && defined $pw ) {
             my $opt = get_saslauthd_settings($c);
-            if ( auth_cyrus( $login, $pw, %{$opt} ) ) {
+            if ( eval { auth_cyrus( $login, $pw, %{$opt} ) } ) {
                 return $c->render( status => 200, text => 'OK' );
+            }
+            if ($@) {
+                return $c->render( status => 503, text => $@ );
             }
         }
     }
