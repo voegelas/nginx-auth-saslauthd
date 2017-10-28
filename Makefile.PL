@@ -29,7 +29,6 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
     "File::Temp" => 0,
-    "List::Util" => 0,
     "Test::More" => "0.96"
   },
   "test" => {
@@ -60,7 +59,6 @@ my %FallbackPrereqs = (
   "Mojolicious" => 0,
   "File::Spec" => 0,
   "File::Temp" => 0,
-  "List::Util" => 0,
   "Test::More" => "0.96"
 );
 

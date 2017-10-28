@@ -8,7 +8,6 @@ use File::Spec::Functions qw(catfile);
 use File::Temp qw(tempdir);
 use IO::Socket::Timeout;
 use IO::Socket::UNIX;
-use List::Util qw(all);
 use Mojo::Util qw(b64_encode);
 
 use FindBin;
@@ -54,7 +53,7 @@ if ( $child_pid == 0 ) {
     my $client;
     while ( $client = $server->accept ) {
         my $reply = (
-            all { $_ eq read_string($client) }
+            4 == grep { $_ eq read_string($client) }
             qw(perl good Mojolicious mojolicious.org)
         ) ? 'OK' : 'NO';
         $client->send( pack 'n/a*', $reply );
