@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
   "NO_PACKLIST" => 1,
   "NO_PERLLOCAL" => 1,
   "PREREQ_PM" => {
-    "Mojolicious" => 0
+    "Mojolicious" => "7.27"
   },
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
@@ -53,7 +53,7 @@ if (eval { ExtUtils::MakeMaker->VERSION(6.46) }) {
 
 
 my %FallbackPrereqs = (
-  "Mojolicious" => 0,
+  "Mojolicious" => "7.27",
   "File::Spec" => 0,
   "File::Temp" => 0,
   "IO::Socket::UNIX" => 0,

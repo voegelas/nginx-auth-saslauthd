@@ -1,16 +1,18 @@
 dist: trusty
 sudo: required
 
-language: generic
+language: perl
+  - "5.26"
 
 install:
   - sudo apt-get -qq update
-  - sudo apt-get -y install libmojolicious-perl sasl2-bin curl
+  - sudo apt-get -y install sasl2-bin curl
   - sudo sed -i 's/^START=no/START=yes/' /etc/default/saslauthd
   - sudo service saslauthd start
   - sudo useradd -s /bin/false -G sasl nginx-auth
   - sudo useradd -p '$1$sfat9VAd$vpkX4bM3wxhp1T4py25Gy0' -s /bin/false testuser
   - printf "@include common-auth\n@include common-account\n" | sudo tee /etc/pam.d/nginx
+  - cpanm -n Mojolicious
 
 script:
   - perl Makefile.PL

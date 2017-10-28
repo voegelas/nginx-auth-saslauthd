@@ -32,10 +32,8 @@ make install
 
 ## DEPENDENCIES
 
-This program requires [Mojolicious](http://mojolicious.org/) and the saslauthd
-daemon from Cyrus SASL.
-
-On Ubuntu, install the packages libmojolicious-perl and sasl2-bin.
+This program requires [Mojolicious](http://mojolicious.org/) 7.27 or later and
+the saslauthd daemon from Cyrus SASL.
 
 ## SUPPORT AND DOCUMENTATION
 

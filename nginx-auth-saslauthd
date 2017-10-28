@@ -194,9 +194,6 @@ with systemctl.
     [Install]
     WantedBy=multi-user.target
 
-From version 7.27 on Mojolicious supports UNIX domain sockets in addition to
-TCP sockets.
-
 =head1 DESCRIPTION
 
 nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
@@ -233,7 +230,7 @@ The SASL realm. Defaults to the empty string.
 
 =head1 DEPENDENCIES
 
-Requires Mojolicious and the saslauthd daemon from Cyrus SASL.
+Requires Mojolicious 7.27 or later and the saslauthd daemon from Cyrus SASL.
 
 =head1 INCOMPATIBILITIES
 
