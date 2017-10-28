@@ -22,13 +22,12 @@ my %WriteMakefileArgs = (
   "NO_PACKLIST" => 1,
   "NO_PERLLOCAL" => 1,
   "PREREQ_PM" => {
-    "IO::Socket::Timeout" => 0,
-    "IO::Socket::UNIX" => 0,
     "Mojolicious" => 0
   },
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
     "File::Temp" => 0,
+    "IO::Socket::UNIX" => 0,
     "Test::More" => "0.96"
   },
   "test" => {
@@ -54,11 +53,10 @@ if (eval { ExtUtils::MakeMaker->VERSION(6.46) }) {
 
 
 my %FallbackPrereqs = (
-  "IO::Socket::Timeout" => 0,
-  "IO::Socket::UNIX" => 0,
   "Mojolicious" => 0,
   "File::Spec" => 0,
   "File::Temp" => 0,
+  "IO::Socket::UNIX" => 0,
   "Test::More" => "0.96"
 );
 

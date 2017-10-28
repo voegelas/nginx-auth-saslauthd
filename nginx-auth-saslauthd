@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
 use Mojolicious::Lite;
+use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode);
-use IO::Socket::Timeout;
-use IO::Socket::UNIX;
 
 our $VERSION = '0.001';
 
@@ -20,49 +19,97 @@ sub get_saslauthd_settings {
 }
 
 sub auth_cyrus {
-    my ( $login, $pw, %opt ) = @_;
+    my ( $login, $pw, $opt, $on_reply, $on_error ) = @_;
 
-    my $service = $opt{service_name};
-    my $timeout = $opt{timeout};
-    my $path    = $opt{socket};
-    my $realm   = $opt{realm};
+    my $service = $opt->{service_name};
+    my $timeout = $opt->{timeout};
+    my $path    = $opt->{socket};
+    my $realm   = $opt->{realm};
 
-    my $sock = IO::Socket::UNIX->new( Type => SOCK_STREAM, Peer => $path )
-        or die qq{$path: $!};
-    IO::Socket::Timeout->enable_timeouts_on($sock);
-    $sock->read_timeout($timeout);
-    $sock->write_timeout($timeout);
     my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw, $service, $realm;
-    defined $sock->send($cred) or die qq{$path: $!};
-    defined $sock->recv( my $n, 2 ) or die qq{$path: $!};
-    defined $sock->recv( my $reply, unpack 'n', $n ) or die qq{$path: $!};
-    close $sock;
-    return substr( $reply, 0, 2 ) eq 'OK';
+
+    Mojo::IOLoop->client(
+        { path => $path, timeout => $timeout },
+        sub {
+            my ( $loop, $err, $stream ) = @_;
+
+            if ($err) {
+                $on_error->("$path: $err");
+                return;
+            }
+
+            $stream->on(
+                read => sub {
+                    my ( $stream, $bytes ) = @_;
+                    my $reply = unpack 'n/a*', $bytes;
+                    $on_reply->($reply);
+                }
+            );
+
+            $stream->on(
+                error => sub {
+                    my ( $stream, $err ) = @_;
+                    $on_error->("$path: $err");
+                }
+            );
+
+            $stream->timeout($timeout);
+            $stream->write($cred);
+        }
+    );
+}
+
+sub authorized {
+    my ( $c, $reply ) = @_;
+
+    return $c->render( status => 200, text => $reply );
+}
+
+sub unauthorized {
+    my ( $c, $reply ) = @_;
+
+    my $realm = $c->req->headers->header('X-Realm') // 'Restricted';
+    $c->res->headers->www_authenticate(qq{Basic realm="$realm"});
+    $c->res->headers->cache_control('no-cache');
+    return $c->render( status => 401, text => $reply );
+}
+
+sub error {
+    my ( $c, $err ) = @_;
+
+    return $c->render( status => 503, text => $err );
 }
 
 get '/auth-basic' => sub {
     my $c = shift;
 
-    my $h = $c->req->headers;
-    my $auth = $h->authorization // q{};
+    my $auth = $c->req->headers->authorization // q{};
     if ( substr( $auth, 0, 6 ) eq 'Basic ' ) {
         my $cred = b64_decode( substr $auth, 6 ) // q{};
         my ( $login, $pw ) = split /:/, $cred, 2;
         if ( defined $login && defined $pw ) {
             my $opt = get_saslauthd_settings($c);
-            if ( eval { auth_cyrus( $login, $pw, %{$opt} ) } ) {
-                return $c->render( status => 200, text => 'OK' );
-            }
-            if ($@) {
-                return $c->render( status => 503, text => $@ );
-            }
+            auth_cyrus(
+                $login, $pw, $opt,
+                sub {
+                    my $reply = shift;
+                    if ( substr( $reply, 0, 2 ) eq 'OK' ) {
+                        authorized( $c, $reply );
+                    }
+                    else {
+                        unauthorized( $c, $reply );
+                    }
+                },
+                sub {
+                    my $err = shift;
+                    error( $c, $err );
+                }
+            );
+            return;
         }
     }
 
-    my $realm = $h->header('X-Realm') // 'Restricted';
-    $c->res->headers->www_authenticate(qq{Basic realm="$realm"});
-    $c->res->headers->cache_control('no-cache');
-    return $c->render( status => 401, text => 'Unauthorized' );
+    return unauthorized( $c, 'Unauthorized' );
 };
 
 app->start;
@@ -186,7 +233,7 @@ The SASL realm. Defaults to the empty string.
 
 =head1 DEPENDENCIES
 
-Requires Mojolicious, IO::Socket::Timeout, IO::Socket::UNIX and saslauthd.
+Requires Mojolicious and the saslauthd daemon from Cyrus SASL.
 
 =head1 INCOMPATIBILITIES
 

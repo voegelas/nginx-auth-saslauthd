@@ -32,11 +32,10 @@ make install
 
 ## DEPENDENCIES
 
-This program requires [Mojolicious](http://mojolicious.org/),
-IO::Socket::Timeout and the saslauthd daemon from Cyrus SASL.
+This program requires [Mojolicious](http://mojolicious.org/) and the saslauthd
+daemon from Cyrus SASL.
 
-On Ubuntu, install the packages libmojolicious-perl, libio-socket-timeout-perl
-and sasl2-bin.
+On Ubuntu, install the packages libmojolicious-perl and sasl2-bin.
 
 ## SUPPORT AND DOCUMENTATION
 

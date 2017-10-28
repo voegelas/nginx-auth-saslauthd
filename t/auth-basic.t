@@ -6,7 +6,6 @@ use Test::Mojo;
 
 use File::Spec::Functions qw(catfile);
 use File::Temp qw(tempdir);
-use IO::Socket::Timeout;
 use IO::Socket::UNIX;
 use Mojo::Util qw(b64_encode);
 
@@ -43,9 +42,6 @@ if ( $child_pid == 0 ) {
         Local  => $path,
         Listen => 1,
     ) or die qq{$path: $!};
-    IO::Socket::Timeout->enable_timeouts_on($server);
-    $server->read_timeout(5);
-    $server->write_timeout(5);
 
     # Tell the parent that we are ready.
     kill 'USR1', $parent_pid;
