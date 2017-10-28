@@ -1,24 +1,3 @@
-dist: trusty
-sudo: required
-
 language: perl
-  - "5.26"
-
-install:
-  - sudo apt-get -qq update
-  - sudo apt-get -y install sasl2-bin curl
-  - sudo sed -i 's/^START=no/START=yes/' /etc/default/saslauthd
-  - sudo service saslauthd start
-  - sudo useradd -s /bin/false -G sasl nginx-auth
-  - sudo useradd -p '$1$sfat9VAd$vpkX4bM3wxhp1T4py25Gy0' -s /bin/false testuser
-  - printf "@include common-auth\n@include common-account\n" | sudo tee /etc/pam.d/nginx
-  - cpanm -n Mojolicious
-
-script:
-  - perl Makefile.PL
-  - make
-  - make test
-  - sudo make install
-  - sudo -u nginx-auth /usr/local/bin/nginx-auth-saslauthd daemon -m production -l http://127.0.0.1:8008 &
-  - sleep 5
-  - curl -s http://testuser:Ishah8eiboBo@127.0.0.1:8008/auth-basic
+perl:
+  - "5.24"
