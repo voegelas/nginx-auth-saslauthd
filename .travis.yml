@@ -15,6 +15,7 @@ install:
 script:
   - perl Makefile.PL
   - make
+  - make test
   - sudo make install
   - sudo -u nginx-auth /usr/local/bin/nginx-auth-saslauthd daemon -m production -l http://127.0.0.1:8008 &
   - sleep 5

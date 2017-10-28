@@ -1,9 +1,10 @@
-/App-Nginx-Auth-Saslauthd-*
+/nginx-auth-saslauthd-*
 /.build
 /_build
 /Build
 /Makefile
 /Makefile.old
+/MANIFEST
 /blib
 /pm_to_blib
 MYMETA.*

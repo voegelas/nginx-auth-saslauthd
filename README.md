@@ -23,9 +23,10 @@ location = /auth {
 
 To install the program, run the following commands:
 
-```Shell
+```
 perl Makefile.PL
 make
+make test
 make install
 ```
 
@@ -42,11 +43,9 @@ and sasl2-bin.
 Type "man nginx-auth-saslauthd" after installation to see the program usage
 information.
 
-If you want to hack on the source it might be a good idea to install
-[Dist::Zilla](http://dzil.org/) and grab the latest version with git using the
-command:
+If you want to hack on the source, grab the latest version using the command:
 
-```Shell
+```
 git clone https://github.com/voegelas/nginx-auth-saslauthd.git
 ```
 

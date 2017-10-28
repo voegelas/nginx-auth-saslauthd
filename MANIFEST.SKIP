@@ -1,2 +1,11 @@
-~$
+\.bak$
+\.old$
 \.swp$
+^MANIFEST$
+^MYMETA\.
+^Makefile$
+^\.git/
+^blib/
+^nginx-auth-saslauthd-
+^pm_to_blib
+~$
