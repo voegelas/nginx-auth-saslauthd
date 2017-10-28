@@ -112,6 +112,13 @@ get '/auth-basic' => sub {
     return unauthorized( $c, 'Unauthorized' );
 };
 
+app->hook(
+    after_dispatch => sub {
+        my $c = shift;
+        $c->res->headers->remove('Server');
+    }
+);
+
 app->start;
 __END__
 
