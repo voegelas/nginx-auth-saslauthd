@@ -6,68 +6,50 @@ use 5.010;
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-  "NAME" => "App::Nginx::Auth::Saslauthd",
-  "DISTNAME" => "nginx-auth-saslauthd",
-  "ABSTRACT" => "Verify web users with Basic authentication and saslauthd",
-  "AUTHOR" => "Andreas Voegele <voegelas\@cpan.org>",
-  "VERSION_FROM" => "nginx-auth-saslauthd",
-  "CONFIGURE_REQUIRES" => {
-    "ExtUtils::MakeMaker" => 0
-  },
-  "EXE_FILES" => [
-    "nginx-auth-saslauthd"
+  NAME => 'App::Nginx::Auth::Saslauthd',
+  DISTNAME => 'nginx-auth-saslauthd',
+  ABSTRACT => 'Verify web users with Basic authentication and saslauthd',
+  AUTHOR => 'Andreas Voegele <voegelas@cpan.org>',
+  VERSION_FROM => 'nginx-auth-saslauthd',
+  LICENSE => 'open_source',
+  EXE_FILES => [
+    'nginx-auth-saslauthd'
   ],
-  "LICENSE" => "open_source",
-  "MIN_PERL_VERSION" => "5.010",
-  "NO_PACKLIST" => 1,
-  "NO_PERLLOCAL" => 1,
-  "PREREQ_PM" => {
-    "Mojolicious" => "7.27"
+  NO_PACKLIST => 1,
+  NO_PERLLOCAL => 1,
+  MIN_PERL_VERSION => '5.010',
+  CONFIGURE_REQUIRES => {
+    'ExtUtils::MakeMaker' => 0
   },
-  "TEST_REQUIRES" => {
-    "File::Spec" => 0,
-    "File::Temp" => 0,
-    "IO::Socket::UNIX" => 0,
-    "Test::More" => "0.96"
+  PREREQ_PM => {
+    'Mojolicious' => '7.27'
   },
-  "test" => {
-    "TESTS" => "t/*.t"
+  TEST_REQUIRES => {
+    'File::Spec' => 0,
+    'File::Temp' => 0,
+    'IO::Socket::UNIX' => 0,
+    'Test::More' => '0.96'
+  },
+  test => {
+    TESTS => 't/*.t'
   }
 );
 
-if (eval { ExtUtils::MakeMaker->VERSION(6.46) }) {
-  $WriteMakefileArgs{META_MERGE} = {
-    'meta-spec' => { version => 2 },
-     resources => {
-       bugtracker  => {
-         web => 'https://github.com/voegelas/nginx-auth-saslauthd/issues',
-       },
-       repository => {
-         type => 'git',
-         url => 'https://github.com/voegelas/nginx-auth-saslauthd.git',
-         web => 'https://github.com/voegelas/nginx-auth-saslauthd',
-       },
-    },
-  }
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.75_01) } ) {
+  delete $WriteMakefileArgs{NO_PACKLIST};
+  delete $WriteMakefileArgs{NO_PERLLOCAL};
 }
-
-
-my %FallbackPrereqs = (
-  "Mojolicious" => "7.27",
-  "File::Spec" => 0,
-  "File::Temp" => 0,
-  "IO::Socket::UNIX" => 0,
-  "Test::More" => "0.96"
-);
-
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  $WriteMakefileArgs{PREREQ_PM} = {
+    %{ $WriteMakefileArgs{PREREQ_PM} },
+    %{ $WriteMakefileArgs{TEST_REQUIRES} },
+  };
   delete $WriteMakefileArgs{TEST_REQUIRES};
-  delete $WriteMakefileArgs{BUILD_REQUIRES};
-  $WriteMakefileArgs{PREREQ_PM} = \%FallbackPrereqs;
 }
 
-delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.52) } ) {
+  delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+}
 
 WriteMakefile(%WriteMakefileArgs);
