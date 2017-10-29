@@ -132,8 +132,6 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
 
 =head1 USAGE
 
-=head2 NGINX
-
     location /private/ {
         auth_request /auth;
     }
@@ -145,6 +143,62 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
         proxy_set_header Content-Length "";
         proxy_set_header X-Realm "Restricted";
         proxy_set_header X-Saslauthd-Path "/var/run/saslauthd/mux";
+    }
+
+=head1 DESCRIPTION
+
+nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
+program supports Basic authentication and verifies users with LDAP, PAM or
+other mechanisms supported by saslauthd.
+
+=head1 CONFIGURATION
+
+=head2 NGINX
+
+The below headers can be passed from nginx to the authentication daemon.
+
+=over 4
+
+=item B<X-Realm>
+
+The realm for Basic authentication. Defaults to "Restricted".
+
+=item B<X-Saslauthd-Path>
+
+The path to the saslauthd socket. Defaults to "/var/run/saslauthd/mux".
+
+=item B<X-Saslauthd-Timeout>
+
+A timeout when writing to and reading from the socket. Defaults to 5 seconds.
+
+=item B<X-Saslauthd-Service>
+
+The SASL service name. Defaults to "nginx".
+
+=item B<X-Saslauthd-Realm>
+
+The SASL realm. Defaults to the empty string.
+
+=back
+
+=head3 CACHING
+
+nginx can be configured to cache authentication requests, but the credentials
+will be stored on disk in cleartext.
+
+    http {
+        ...
+        proxy_cache_path /var/cache/nginx keys_zone=auth_cache:1m;
+
+        server {
+            ...
+            location = /auth {
+                ...
+                proxy_cache auth_cache
+                proxy_cache_key "$http_authorization";
+                proxy_cache_valid 200 10m;
+            }
+        }
     }
 
 =head2 SASLAUTHD
@@ -199,39 +253,10 @@ with systemctl.
     [Install]
     WantedBy=multi-user.target
 
-=head1 DESCRIPTION
+Test the daemon with, for example, curl.
 
-nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
-program supports Basic authentication and verifies users with LDAP, PAM or
-other mechanisms supported by saslauthd.
-
-=head1 CONFIGURATION
-
-The below headers can be passed from nginx to the authentication daemon.
-
-=over 4
-
-=item B<X-Realm>
-
-The realm for Basic authentication. Defaults to "Restricted".
-
-=item B<X-Saslauthd-Path>
-
-The path to the saslauthd socket. Defaults to "/var/run/saslauthd/mux".
-
-=item B<X-Saslauthd-Timeout>
-
-A timeout when writing to and reading from the socket. Defaults to 5 seconds.
-
-=item B<X-Saslauthd-Service>
-
-The SASL service name. Defaults to "nginx".
-
-=item B<X-Saslauthd-Realm>
-
-The SASL realm. Defaults to the empty string.
-
-=back
+    curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
+         http://127.0.0.1:8008/auth-basic
 
 =head1 DEPENDENCIES
 
