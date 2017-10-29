@@ -11,6 +11,7 @@ location /private/ {
 }
 
 location = /auth {
+    internal;
     proxy_pass http://unix:/run/nginx-auth/http.sock:/auth-basic;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
