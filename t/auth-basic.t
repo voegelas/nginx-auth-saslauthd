@@ -18,6 +18,9 @@ my $cred_bad  = b64_encode( "python:bad", q{} );
 my $dir = tempdir( CLEANUP => 1 );
 my $path = catfile( $dir, 'mux' );
 
+my $child_is_ready = 0;
+$SIG{USR1} = sub { $child_is_ready = 1 };
+
 sub read_string {
     my $sock = shift;
 
@@ -58,8 +61,6 @@ if ( $child_pid == 0 ) {
     exit 0;
 }
 
-my $child_is_ready = 0;
-$SIG{USR1} = sub { $child_is_ready = 1 };
 sleep 5;
 plan skip_all => 'could not create socket' if !$child_is_ready;
 
