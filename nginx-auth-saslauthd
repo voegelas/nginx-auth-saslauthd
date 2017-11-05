@@ -148,9 +148,9 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
 =head1 DESCRIPTION
 
 B<nginx-auth-saslauthd> interfaces the B<nginx> web server with the
-B<saslauthd> daemon.  The tool supports Basic authentication and verifies
+B<saslauthd> daemon.  The program supports Basic authentication and verifies
 users with LDAP, PAM or other mechanisms supported by B<saslauthd>.
-Authentication requests are forwarded from nginx with the B<auth_request>
+Authentication requests are forwarded from B<nginx> with the B<auth_request>
 directive.
 
 =head1 CONFIGURATION
@@ -238,8 +238,8 @@ Create a new user. On Ubuntu, add the user to the B<sasl> group.
 
     useradd -r -M -d /nonexistent -s /bin/false -G sasl -U nginx-auth
 
-Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the tool
-with B<systemctl>.
+Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the
+program with B<systemctl>.
 
     [Unit]
     Description=Basic authentication with saslauthd
@@ -254,7 +254,7 @@ with B<systemctl>.
     [Install]
     WantedBy=multi-user.target
 
-Test the tool with, for example, B<curl>.
+Test the program with, for example, B<curl>.
 
     curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
          http://127.0.0.1:8008/auth-basic
