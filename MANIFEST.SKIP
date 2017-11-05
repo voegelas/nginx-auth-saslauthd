@@ -5,6 +5,7 @@
 ^Makefile$
 ^\.git/
 ^blib/
+^debian/
 ^nginx-auth-saslauthd-
 ^pm_to_blib
 ~$
