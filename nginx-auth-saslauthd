@@ -236,7 +236,7 @@ Check your setup with B<testsaslauthd>.
 
 Create a new user. On Ubuntu, add the user to the B<sasl> group.
 
-    useradd -r -M -d /nonexistent -s /bin/false -G sasl -U nginx-auth
+    useradd -r -M -d /nonexistent -s /usr/sbin/nologin -G sasl -U nginx-auth
 
 Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the
 program with B<systemctl>.
