@@ -147,15 +147,17 @@ This documentation refers to nginx-auth-saslauthd version 0.001.
 
 =head1 DESCRIPTION
 
-nginx-auth-saslauthd is an authentication daemon for the nginx web server. The
-program supports Basic authentication and verifies users with LDAP, PAM or
-other mechanisms supported by saslauthd.
+B<nginx-auth-saslauthd> interfaces the B<nginx> web server with the
+B<saslauthd> daemon.  The tool supports Basic authentication and verifies
+users with LDAP, PAM or other mechanisms supported by B<saslauthd>.
+Authentication requests are forwarded from nginx with the B<auth_request>
+directive.
 
 =head1 CONFIGURATION
 
 =head2 NGINX
 
-The below headers can be passed from nginx to the authentication daemon.
+The below headers can be passed from B<nginx> to the program.
 
 =over 4
 
@@ -165,7 +167,7 @@ The realm for Basic authentication. Defaults to "Restricted".
 
 =item B<X-Saslauthd-Path>
 
-The path to the saslauthd socket. Defaults to "/var/run/saslauthd/mux".
+The path to the communications socket. Defaults to F</var/run/saslauthd/mux>.
 
 =item B<X-Saslauthd-Timeout>
 
@@ -183,8 +185,8 @@ The SASL realm. Defaults to the empty string.
 
 =head3 CACHING
 
-nginx can be configured to cache authentication requests, but the credentials
-will be stored on disk in cleartext.
+B<nginx> can be configured to cache authentication requests, but the
+credentials will be stored on disk in cleartext.
 
     http {
         ...
@@ -203,13 +205,12 @@ will be stored on disk in cleartext.
 
 =head2 SASLAUTHD
 
-Enable caching of authentication credentials by passing the B<-c> switch to
-saslauthd.
+Enable credential caching by passing the B<-c> switch to B<saslauthd>.
 
-On Ubuntu, install the sasl2-bin package. Enable and configure the saslauthd
-daemon in /etc/default/saslauthd.
+On Ubuntu, install the B<sasl2-bin> package. Enable and configure the
+authentication daemon in F</etc/default/saslauthd>.
 
-If saslauthd uses LDAP, create /etc/saslauthd.conf.
+If you use LDAP, create F</etc/saslauthd.conf>.
 
     ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
     ldap_start_tls: yes
@@ -220,25 +221,25 @@ If saslauthd uses LDAP, create /etc/saslauthd.conf.
     ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
     ldap_password: secret
 
-If saslauthd uses PAM, create /etc/pam.d/nginx.
+If you use PAM, create F</etc/pam.d/nginx>.
 
     #%PAM-1.0
     @include common-auth
     @include common-account
 
-Check your setup with testsaslauthd.
+Check your setup with B<testsaslauthd>.
 
     unset HISTFILE
     /usr/sbin/testsaslauthd -s nginx -u $USER -p 'your password'
 
 =head2 SYSTEMD
 
-Create a new user. On Ubuntu, add the user to the sasl group.
+Create a new user. On Ubuntu, add the user to the B<sasl> group.
 
     useradd -r -M -d /nonexistent -s /bin/false -G sasl -U nginx-auth
 
-Create /lib/systemd/system/nginx-auth-saslauthd.service and enable the daemon
-with systemctl.
+Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the
+utility with B<systemctl>.
 
     [Unit]
     Description=Basic authentication with saslauthd
@@ -253,7 +254,7 @@ with systemctl.
     [Install]
     WantedBy=multi-user.target
 
-Test the daemon with, for example, curl.
+Test the daemon with, for example, B<curl>.
 
     curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
          http://127.0.0.1:8008/auth-basic
