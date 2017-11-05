@@ -1,0 +1,11 @@
+.gitignore
+.travis.yml
+Changes
+cpanfile
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+nginx-auth-saslauthd
+README.md
+t/auth-basic.t

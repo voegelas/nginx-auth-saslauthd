@@ -1,7 +1,6 @@
 \.bak$
 \.old$
 \.swp$
-^MANIFEST$
 ^MYMETA\.
 ^Makefile$
 ^\.git/
