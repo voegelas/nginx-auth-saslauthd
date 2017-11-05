@@ -254,7 +254,7 @@ with B<systemctl>.
     [Install]
     WantedBy=multi-user.target
 
-Test the daemon with, for example, B<curl>.
+Test the tool with, for example, B<curl>.
 
     curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
          http://127.0.0.1:8008/auth-basic
