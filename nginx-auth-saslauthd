@@ -238,8 +238,8 @@ Create a new user. On Ubuntu, add the user to the B<sasl> group.
 
     useradd -r -M -d /nonexistent -s /bin/false -G sasl -U nginx-auth
 
-Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the
-utility with B<systemctl>.
+Create F</lib/systemd/system/nginx-auth-saslauthd.service> and enable the tool
+with B<systemctl>.
 
     [Unit]
     Description=Basic authentication with saslauthd
