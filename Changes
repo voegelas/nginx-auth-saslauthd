@@ -1,5 +1,10 @@
 Revision history for nginx-auth-saslauthd
 
+0.002  2017-11-07 09:12:36 CET
+
+  - Check whether the HTTP connection has been closed early.
+  - Raise the default saslauthd timeout from 5 to 10 seconds.
+
 0.001  2017-11-05 18:59:51 CET
 
   - First version, released on an unsuspecting world.

@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode);
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 sub get_saslauthd_settings {
     my $c = shift;
