@@ -14,7 +14,7 @@ sub get_saslauthd_settings {
     $opt{socket} = $h->header('X-Saslauthd-Path') // '/var/run/saslauthd/mux';
     $opt{realm}        = $h->header('X-Saslauthd-Realm')   // q{};
     $opt{service_name} = $h->header('X-Saslauthd-Service') // 'nginx';
-    $opt{timeout}      = $h->header('X-Saslauthd-Timeout') // 5;
+    $opt{timeout}      = $h->header('X-Saslauthd-Timeout') // 10;
     return \%opt;
 }
 
@@ -169,7 +169,7 @@ The path to the communications socket. Defaults to F</var/run/saslauthd/mux>.
 
 =item B<X-Saslauthd-Timeout>
 
-A timeout when writing to and reading from the socket. Defaults to 5 seconds.
+A timeout when writing to and reading from the socket. Defaults to 10 seconds.
 
 =item B<X-Saslauthd-Service>
 
