@@ -19,7 +19,7 @@ sub get_saslauthd_settings {
 }
 
 sub auth_cyrus {
-    my ( $login, $pw, $opt, $on_reply, $on_error ) = @_;
+    my ( $login, $pw, $opt, $cb ) = @_;
 
     my $service = $opt->{service_name};
     my $timeout = $opt->{timeout};
@@ -34,7 +34,7 @@ sub auth_cyrus {
             my ( $loop, $err, $stream ) = @_;
 
             if ($err) {
-                $on_error->("$path: $err");
+                $cb->( "$path: $err", undef );
                 return;
             }
 
@@ -42,14 +42,14 @@ sub auth_cyrus {
                 read => sub {
                     my ( $stream, $bytes ) = @_;
                     my $reply = unpack 'n/a*', $bytes;
-                    $on_reply->($reply);
+                    $cb->( undef, $reply );
                 }
             );
 
             $stream->on(
                 error => sub {
                     my ( $stream, $err ) = @_;
-                    $on_error->("$path: $err");
+                    $cb->( "$path: $err", undef );
                 }
             );
 
@@ -57,6 +57,7 @@ sub auth_cyrus {
             $stream->write($cred);
         }
     );
+    return;
 }
 
 sub authorized {
@@ -89,20 +90,17 @@ get '/auth-basic' => sub {
         my ( $login, $pw ) = split /:/, $cred, 2;
         if ( defined $login && defined $pw ) {
             my $opt = get_saslauthd_settings($c);
+            $c->render_later;
+            my $tx = $c->tx;
             auth_cyrus(
                 $login, $pw, $opt,
                 sub {
-                    my $reply = shift;
-                    if ( substr( $reply, 0, 2 ) eq 'OK' ) {
-                        authorized( $c, $reply );
-                    }
-                    else {
-                        unauthorized( $c, $reply );
-                    }
-                },
-                sub {
-                    my $err = shift;
-                    error( $c, $err );
+                    my ( $err, $reply ) = @_;
+                    return if $tx->is_finished;
+                    return error( $c, $err ) if defined $err;
+                    return unauthorized( $c, $reply )
+                        if substr( $reply, 0, 2 ) ne 'OK';
+                    return authorized( $c, $reply );
                 }
             );
             return;
