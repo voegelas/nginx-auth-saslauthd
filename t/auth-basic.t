@@ -51,10 +51,8 @@ if ( $child_pid == 0 ) {
 
     my $client;
     while ( $client = $server->accept ) {
-        my $reply = (
-            4 == grep { $_ eq read_string($client) }
-            qw(perl good Mojolicious mojolicious.org)
-        ) ? 'OK' : 'NO';
+        my $reply = ( 4 == grep { $_ eq read_string($client) }
+                qw(perl good Mojolicious mojolicious.org) ) ? 'OK' : 'NO';
         $client->send( pack 'n/a*', $reply );
     }
 
@@ -66,8 +64,9 @@ plan skip_all => 'could not create socket' if !$child_is_ready;
 
 my $t = Test::Mojo->new;
 
-$t->get_ok( '/auth-basic' => { 'X-Realm' => 'Perl' } )->status_is(401)
-    ->header_is( 'WWW-Authenticate' => qq{Basic realm="Perl"} );
+$t->get_ok( '/auth-basic' => { 'X-Realm' => q{"Perl"} } )->status_is(401)
+    ->header_is(
+    'WWW-Authenticate' => q{Basic realm="\"Perl\"", charset="UTF-8"} );
 
 $t->get_ok(
     '/auth-basic' => {
