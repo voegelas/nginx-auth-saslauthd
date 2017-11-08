@@ -2,7 +2,7 @@
 
 use Mojolicious::Lite;
 use Mojo::IOLoop;
-use Mojo::Util qw(b64_decode quote);
+use Mojo::Util qw(b64_decode encode quote);
 
 our $VERSION = '0.002';
 
@@ -26,7 +26,8 @@ sub auth_cyrus {
     my $path    = $opt->{socket};
     my $realm   = $opt->{realm};
 
-    my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw, $service, $realm;
+    my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
+       encode( 'UTF-8', $service ), encode( 'UTF-8', $realm );
 
     Mojo::IOLoop->client(
         { path => $path, timeout => $timeout },

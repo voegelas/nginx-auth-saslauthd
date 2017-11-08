@@ -7,13 +7,15 @@ use Test::Mojo;
 use File::Spec::Functions qw(catfile);
 use File::Temp qw(tempdir);
 use IO::Socket::UNIX;
-use Mojo::Util qw(b64_encode);
+use Mojo::Util qw(b64_encode decode);
 
 use FindBin;
 require "$FindBin::Bin/../nginx-auth-saslauthd";
 
-my $cred_good = b64_encode( "perl:good",  q{} );
-my $cred_bad  = b64_encode( "python:bad", q{} );
+my @good_values = map { decode( 'ISO-8859-1', $_ ) }
+    ( "Lemmy", "Mot\366rhead", "Moj\366licious", "moj\366licious.org" );
+my $cred_good = b64_encode( "Lemmy:Mot\303\266rhead", q{} );
+my $cred_bad  = b64_encode( "Lemmy:Motorhead",        q{} );
 
 my $dir = tempdir( CLEANUP => 1 );
 my $path = catfile( $dir, 'mux' );
@@ -21,10 +23,10 @@ my $path = catfile( $dir, 'mux' );
 my $child_is_ready = 0;
 $SIG{USR1} = sub { $child_is_ready = 1 };
 
-sub read_string {
+sub read_bytes {
     my $sock = shift;
 
-    my $s = '';
+    my $s = q{};
     my $n;
     if ( defined $sock->recv( $n, 2 ) ) {
         my $len = unpack 'n', $n;
@@ -33,6 +35,12 @@ sub read_string {
         }
     }
     return $s;
+}
+
+sub read_string {
+    my $sock = shift;
+
+    return decode( 'UTF-8', read_bytes($sock) );
 }
 
 # Mock saslauthd.
@@ -51,9 +59,8 @@ if ( $child_pid == 0 ) {
 
     my $client;
     while ( $client = $server->accept ) {
-        my $reply = ( 4 == grep { $_ eq read_string($client) }
-                qw(perl good Mojolicious mojolicious.org) ) ? 'OK' : 'NO';
-        $client->send( pack 'n/a*', $reply );
+        my $ok = ( 4 == grep { read_string($client) eq $_ } @good_values );
+        $client->send( pack 'n/a*', $ok ? 'OK' : 'NO' );
     }
 
     exit 0;
@@ -73,8 +80,8 @@ $t->get_ok(
         'Authorization'       => "Basic $cred_good",
         'X-Saslauthd-Path'    => $path,
         'X-Saslauthd-Timeout' => 5,
-        'X-Saslauthd-Service' => 'Mojolicious',
-        'X-Saslauthd-Realm'   => 'mojolicious.org',
+        'X-Saslauthd-Service' => $good_values[2],
+        'X-Saslauthd-Realm'   => $good_values[3],
     }
 )->status_is(200);
 
