@@ -1,5 +1,11 @@
 Revision history for nginx-auth-saslauthd
 
+0.003  2017-11-08 07:49:29 CET
+
+  - Ask the client to encode the credentials in UTF-8.
+  - Encode the SASL realm and service in UTF-8.
+  - The realm for Basic authentication must only contain ASCII characters.
+
 0.002  2017-11-07 09:12:36 CET
 
   - Check whether the HTTP connection has been closed early.

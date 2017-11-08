@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode encode quote);
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 sub get_saslauthd_settings {
     my $c = shift;
@@ -128,7 +128,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.002.
+This documentation refers to nginx-auth-saslauthd version 0.003.
 
 =head1 USAGE
 
@@ -163,7 +163,7 @@ The below headers can be passed from B<nginx> to the program.
 
 =item B<X-Realm>
 
-The realm for Basic authentication. Must only contain US-ASCII characters.
+The realm for Basic authentication. Must only contain ASCII characters.
 Defaults to "Restricted".
 
 =item B<X-Saslauthd-Path>
