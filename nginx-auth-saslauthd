@@ -2,7 +2,7 @@
 
 use Mojolicious::Lite;
 use Mojo::IOLoop;
-use Mojo::Util qw(b64_decode);
+use Mojo::Util qw(b64_decode quote);
 
 our $VERSION = '0.002';
 
@@ -70,7 +70,8 @@ sub unauthorized {
     my ( $c, $reply ) = @_;
 
     my $realm = $c->req->headers->header('X-Realm') // 'Restricted';
-    $c->res->headers->www_authenticate(qq{Basic realm="$realm"});
+    $c->res->headers->www_authenticate(
+        'Basic realm=' . quote($realm) . ', charset="UTF-8"' );
     $c->res->headers->cache_control('no-cache');
     return $c->render( status => 401, text => $reply, format => 'txt' );
 }
@@ -161,7 +162,8 @@ The below headers can be passed from B<nginx> to the program.
 
 =item B<X-Realm>
 
-The realm for Basic authentication. Defaults to "Restricted".
+The realm for Basic authentication. Must only contain US-ASCII characters.
+Defaults to "Restricted".
 
 =item B<X-Saslauthd-Path>
 
