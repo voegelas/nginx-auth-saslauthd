@@ -252,7 +252,7 @@ program with B<systemctl>.
     [Install]
     WantedBy=multi-user.target
 
-Test the program with, for example, B<curl>.
+Test the program with B<curl>.
 
     curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
          http://127.0.0.1:8008/auth-basic
