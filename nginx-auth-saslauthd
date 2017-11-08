@@ -34,7 +34,7 @@ sub auth_cyrus {
             my ( $loop, $err, $stream ) = @_;
 
             if ($err) {
-                $cb->( "$path: $err", undef );
+                $cb->( "$path: $err", 'NO' );
                 return;
             }
 
@@ -49,7 +49,7 @@ sub auth_cyrus {
             $stream->on(
                 error => sub {
                     my ( $stream, $err ) = @_;
-                    $cb->( "$path: $err", undef );
+                    $cb->( "$path: $err", 'NO' );
                 }
             );
 
