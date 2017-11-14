@@ -61,6 +61,7 @@ if ( $child_pid == 0 ) {
     while ( $client = $server->accept ) {
         my $ok = ( 4 == grep { read_string($client) eq $_ } @good_values );
         $client->send( pack 'n/a*', $ok ? 'OK' : 'NO' );
+        close $client;
     }
 
     exit 0;

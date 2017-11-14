@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+0.004  2017-11-14 05:30:30 CET
+
+  - Accumulate the saslauthd daemon's reply.
+
 0.003  2017-11-08 07:49:29 CET
 
   - Ask the client to encode the credentials in UTF-8.

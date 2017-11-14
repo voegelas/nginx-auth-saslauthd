@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode encode quote);
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 sub get_saslauthd_settings {
     my $c = shift;
@@ -27,7 +27,9 @@ sub auth_cyrus {
     my $realm   = $opt->{realm};
 
     my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
-       encode( 'UTF-8', $service ), encode( 'UTF-8', $realm );
+        encode( 'UTF-8', $service ), encode( 'UTF-8', $realm );
+
+    my $bytes = "";
 
     Mojo::IOLoop->client(
         { path => $path, timeout => $timeout },
@@ -39,9 +41,10 @@ sub auth_cyrus {
                 return;
             }
 
+            $stream->on( read => sub { $bytes .= $_[1] } );
+
             $stream->on(
-                read => sub {
-                    my ( $stream, $bytes ) = @_;
+                close => sub {
                     my $reply = unpack 'n/a*', $bytes;
                     $cb->( undef, $reply );
                 }
@@ -128,7 +131,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.003.
+This documentation refers to nginx-auth-saslauthd version 0.004.
 
 =head1 USAGE
 
