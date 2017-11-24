@@ -6,7 +6,7 @@ use 5.010;
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-  NAME => 'App::Nginx::Auth::Saslauthd',
+  NAME => 'App::nginx_auth_saslauthd',
   DISTNAME => 'nginx-auth-saslauthd',
   ABSTRACT => 'Verify web users with Basic authentication and saslauthd',
   AUTHOR => 'Andreas Voegele <voegelas@cpan.org>',
