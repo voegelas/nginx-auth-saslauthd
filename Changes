@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+0.005  2017-11-25 12:16:09 CET
+
+  - Prepare for a possible CPAN release.
+
 0.004  2017-11-14 05:30:30 CET
 
   - Accumulate the saslauthd daemon's reply.
