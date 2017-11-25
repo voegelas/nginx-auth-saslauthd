@@ -10,10 +10,10 @@ my %WriteMakefileArgs = (
   DISTNAME => 'nginx-auth-saslauthd',
   ABSTRACT => 'Verify web users with Basic authentication and saslauthd',
   AUTHOR => 'Andreas Voegele <voegelas@cpan.org>',
-  VERSION_FROM => 'nginx-auth-saslauthd',
+  VERSION_FROM => 'bin/nginx-auth-saslauthd',
   LICENSE => 'open_source',
   EXE_FILES => [
-    'nginx-auth-saslauthd'
+    'bin/nginx-auth-saslauthd'
   ],
   NO_PACKLIST => 1,
   NO_PERLLOCAL => 1,

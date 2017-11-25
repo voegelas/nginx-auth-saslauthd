@@ -10,7 +10,7 @@ use IO::Socket::UNIX;
 use Mojo::Util qw(b64_encode decode);
 
 use FindBin;
-require "$FindBin::Bin/../nginx-auth-saslauthd";
+require "$FindBin::Bin/../bin/nginx-auth-saslauthd";
 
 my @good_values = map { decode( 'ISO-8859-1', $_ ) }
     ( "Lemmy", "Mot\366rhead", "Moj\366licious", "moj\366licious.org" );
