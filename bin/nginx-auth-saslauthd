@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode encode quote);
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 sub get_saslauthd_settings {
     my $c = shift;
@@ -131,7 +131,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.005.
+This documentation refers to nginx-auth-saslauthd version 0.006.
 
 =head1 USAGE
 
