@@ -6,25 +6,29 @@ use Mojo::Util qw(b64_decode encode quote);
 
 our $VERSION = '0.006';
 
-sub get_saslauthd_settings {
-    my $c = shift;
-
-    my $h = $c->req->headers;
-    my %opt;
-    $opt{socket} = $h->header('X-Saslauthd-Path') // '/var/run/saslauthd/mux';
-    $opt{realm}        = $h->header('X-Saslauthd-Realm')   // q{};
-    $opt{service_name} = $h->header('X-Saslauthd-Service') // 'nginx';
-    $opt{timeout}      = $h->header('X-Saslauthd-Timeout') // 10;
-    return \%opt;
+sub find_mux {
+    my @paths = ( '/run/saslauthd/mux', '/var/state/saslauthd/mux',
+        '/var/sasl2/mux' );
+    return ( ( grep {-S} @paths ), '/var/run/saslauthd/mux' )[0];
 }
 
-sub auth_cyrus {
-    my ( $login, $pw, $opt, $cb ) = @_;
+my $config = plugin Config => {
+    file => $ENV{MOJO_CONFIG} || '/etc/nginx/auth-saslauthd.conf',
+    default => {
+        path    => find_mux,
+        timeout => 10,
+        service => 'nginx',
+        realm   => '',
+    }
+};
 
-    my $service = $opt->{service_name};
-    my $timeout = $opt->{timeout};
-    my $path    = $opt->{socket};
-    my $realm   = $opt->{realm};
+sub auth_cyrus {
+    my ( $login, $pw, $cb ) = @_;
+
+    my $service = $config->{service};
+    my $timeout = $config->{timeout};
+    my $path    = $config->{path};
+    my $realm   = $config->{realm};
 
     my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
         encode( 'UTF-8', $service ), encode( 'UTF-8', $realm );
@@ -94,11 +98,10 @@ get '/auth-basic' => sub {
         my $cred = b64_decode( substr $auth, 6 ) // q{};
         my ( $login, $pw ) = split /:/, $cred, 2;
         if ( defined $login && defined $pw ) {
-            my $opt = get_saslauthd_settings($c);
             $c->render_later;
             my $tx = $c->tx;
             auth_cyrus(
-                $login, $pw, $opt,
+                $login, $pw,
                 sub {
                     my ( $err, $reply ) = @_;
                     return if $tx->is_finished;
@@ -145,7 +148,6 @@ This documentation refers to nginx-auth-saslauthd version 0.006.
         proxy_pass_request_body off;
         proxy_set_header Content-Length "";
         proxy_set_header X-Realm "Restricted";
-        proxy_set_header X-Saslauthd-Path "/var/run/saslauthd/mux";
     }
 
 =head1 DESCRIPTION
@@ -158,39 +160,48 @@ directive.
 
 =head1 CONFIGURATION
 
-=head2 NGINX
+=head2 /etc/nginx/auth-saslauthd.conf
 
-The below headers can be passed from B<nginx> to the program.
+Create the file F</etc/nginx/auth-saslauthd.conf> if the default values do not
+fit.
+
+    {
+        path    => '/var/run/saslauthd/mux',
+        timeout => 10,
+        service => 'nginx',
+        realm   => '',
+    };
 
 =over 4
 
-=item B<X-Realm>
+=item path
 
-The realm for Basic authentication. Must only contain ASCII characters.
-Defaults to "Restricted".
+The path to the communications socket. Defaults to a platform-specific path,
+e.g. F</var/run/saslauthd/mux>.
 
-=item B<X-Saslauthd-Path>
-
-The path to the communications socket. Defaults to F</var/run/saslauthd/mux>.
-
-=item B<X-Saslauthd-Timeout>
+=item timeout
 
 A timeout when writing to and reading from the socket. Defaults to 10 seconds.
 
-=item B<X-Saslauthd-Service>
+=item service
 
 The SASL service name. Defaults to "nginx".
 
-=item B<X-Saslauthd-Realm>
+=item realm
 
 The SASL realm. Defaults to the empty string.
 
 =back
 
-=head3 CACHING
+=head2 NGINX
+
+Set the B<X-Realm> header in B<nginx> to the realm for Basic authentication.
+The realm must only contain ASCII characters.
+
+    proxy_set_header X-Realm "Restricted";
 
 B<nginx> can be configured to cache authentication requests, but the
-credentials will be stored on disk in cleartext.
+credentials will be stored in cleartext.
 
     http {
         ...
@@ -260,8 +271,7 @@ program with B<systemctl>.
 
 Test the program with B<curl>.
 
-    curl -v -H 'X-Saslauthd-Path: /var/run/saslauthd/mux' \
-         http://127.0.0.1:8008/auth-basic
+    curl -v http://127.0.0.1:8008/auth-basic
 
 =head1 DEPENDENCIES
 

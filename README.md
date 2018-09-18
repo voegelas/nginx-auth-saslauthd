@@ -17,7 +17,6 @@ location = /auth {
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header X-Realm "Restricted";
-    proxy_set_header X-Saslauthd-Path "/var/run/saslauthd/mux";
 }
 ```
 

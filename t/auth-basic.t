@@ -9,9 +9,6 @@ use File::Temp qw(tempdir);
 use IO::Socket::UNIX;
 use Mojo::Util qw(b64_encode decode);
 
-use FindBin;
-require "$FindBin::Bin/../bin/nginx-auth-saslauthd";
-
 my @good_values = map { decode( 'ISO-8859-1', $_ ) }
     ( "Lemmy", "Mot\366rhead", "Moj\366licious", "moj\366licious.org" );
 my $cred_good = b64_encode( "Lemmy:Mot\303\266rhead", q{} );
@@ -19,6 +16,7 @@ my $cred_bad  = b64_encode( "Lemmy:Motorhead",        q{} );
 
 my $dir = tempdir( CLEANUP => 1 );
 my $path = catfile( $dir, 'mux' );
+$ENV{MOJO_CONFIG} = catfile( $dir, 'nonexistent.conf' );
 
 my $child_is_ready = 0;
 $SIG{USR1} = sub { $child_is_ready = 1 };
@@ -70,29 +68,24 @@ if ( $child_pid == 0 ) {
 sleep 5;
 plan skip_all => 'could not create socket' if !$child_is_ready;
 
-my $t = Test::Mojo->new;
+my $t = Test::Mojo->new(
+    Mojo::File->new('bin/nginx-auth-saslauthd'),
+    {   path    => $path,
+        timeout => 5,
+        service => $good_values[2],
+        realm   => $good_values[3],
+    }
+);
 
-$t->get_ok( '/auth-basic' => { 'X-Realm' => q{"Perl"} } )->status_is(401)
+$t->get_ok( '/auth-basic' => { 'X-Realm' => q{"ASCII"} } )->status_is(401)
     ->header_is(
-    'WWW-Authenticate' => q{Basic realm="\"Perl\"", charset="UTF-8"} );
+    'WWW-Authenticate' => q{Basic realm="\"ASCII\"", charset="UTF-8"} );
 
-$t->get_ok(
-    '/auth-basic' => {
-        'Authorization'       => "Basic $cred_good",
-        'X-Saslauthd-Path'    => $path,
-        'X-Saslauthd-Timeout' => 5,
-        'X-Saslauthd-Service' => $good_values[2],
-        'X-Saslauthd-Realm'   => $good_values[3],
-    }
-)->status_is(200);
+$t->get_ok( '/auth-basic' => { 'Authorization' => "Basic $cred_good" } )
+    ->status_is(200);
 
-$t->get_ok(
-    '/auth-basic' => {
-        'Authorization'       => "Basic $cred_bad",
-        'X-Saslauthd-Path'    => $path,
-        'X-Saslauthd-Timeout' => 5,
-    }
-)->status_is(401);
+$t->get_ok( '/auth-basic' => { 'Authorization' => "Basic $cred_bad" } )
+    ->status_is(401);
 
 kill 'TERM', $child_pid;
 waitpid $child_pid, 0;

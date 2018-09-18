@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+0.006  2018-09-18 04:04:12 CEST
+
+  - Read the configuration from /etc/nginx/auth-saslauthd.conf.
+
 0.005  2017-11-25 12:16:09 CET
 
   - Prepare for a possible CPAN release.
