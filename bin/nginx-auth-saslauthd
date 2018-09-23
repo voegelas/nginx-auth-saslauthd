@@ -176,12 +176,14 @@ fit.
 
 =item path
 
-The path to the communications socket. Defaults to a platform-specific path,
-e.g. F</var/run/saslauthd/mux>.
+The path to the communications socket. Defaults to F</run/saslauthd/mux>,
+F</var/run/saslauthd/mux>, F</var/state/saslauthd/mux> or F</var/sasl2/mux>,
+depending on the platform.
 
 =item timeout
 
-A timeout when writing to and reading from the socket. Defaults to 10 seconds.
+A timeout when writing to and reading from the communications socket. Defaults
+to 10 seconds.
 
 =item service
 
@@ -189,7 +191,7 @@ The SASL service name. Defaults to "nginx".
 
 =item realm
 
-The SASL realm. Defaults to the empty string.
+The SASL realm to which the users belong. Defaults to the empty string.
 
 =back
 
@@ -224,6 +226,9 @@ Enable credential caching by passing the B<-c> switch to B<saslauthd>.
 
 On Ubuntu, install the B<sasl2-bin> package. Enable and configure the
 authentication daemon in F</etc/default/saslauthd>.
+
+    MECHANISMS="ldap"
+    OPTIONS="-c -m /var/run/saslauthd"
 
 If you use LDAP, create F</etc/saslauthd.conf>.
 
