@@ -7,122 +7,122 @@ use Mojo::Util qw(b64_decode encode quote);
 our $VERSION = '0.006';
 
 sub find_mux {
-    my @paths = ( '/run/saslauthd/mux', '/var/state/saslauthd/mux',
-        '/var/sasl2/mux' );
-    return ( ( grep {-S} @paths ), '/var/run/saslauthd/mux' )[0];
+  my @paths
+    = ('/run/saslauthd/mux', '/var/state/saslauthd/mux', '/var/sasl2/mux');
+  return ((grep {-S} @paths), '/var/run/saslauthd/mux')[0];
 }
 
 my $config = plugin Config => {
-    file => $ENV{MOJO_CONFIG} || '/etc/nginx/auth-saslauthd.conf',
-    default => {
-        path    => find_mux,
-        timeout => 10,
-        service => 'nginx',
-        realm   => '',
-    }
+  file => $ENV{MOJO_CONFIG} || '/etc/nginx/auth-saslauthd.conf',
+  default => {
+    path    => find_mux,
+    timeout => 10,
+    service => 'nginx',
+    realm   => '',
+  }
 };
 
 sub auth_cyrus {
-    my ( $login, $pw, $cb ) = @_;
+  my ($login, $pw, $cb) = @_;
 
-    my $service = $config->{service};
-    my $timeout = $config->{timeout};
-    my $path    = $config->{path};
-    my $realm   = $config->{realm};
+  my $service = $config->{service};
+  my $timeout = $config->{timeout};
+  my $path    = $config->{path};
+  my $realm   = $config->{realm};
 
-    my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
-        encode( 'UTF-8', $service ), encode( 'UTF-8', $realm );
+  my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
+    encode('UTF-8', $service), encode('UTF-8', $realm);
 
-    my $bytes = "";
+  my $bytes = "";
 
-    Mojo::IOLoop->client(
-        { path => $path, timeout => $timeout },
-        sub {
-            my ( $loop, $err, $stream ) = @_;
+  Mojo::IOLoop->client(
+    {path => $path, timeout => $timeout},
+    sub {
+      my ($loop, $err, $stream) = @_;
 
-            if ($err) {
-                $cb->( "$path: $err", 'NO' );
-                return;
-            }
+      if ($err) {
+        $cb->("$path: $err", 'NO');
+        return;
+      }
 
-            $stream->on( read => sub { $bytes .= $_[1] } );
+      $stream->on(read => sub { $bytes .= $_[1] });
 
-            $stream->on(
-                close => sub {
-                    my $reply = unpack 'n/a*', $bytes;
-                    $cb->( undef, $reply );
-                }
-            );
-
-            $stream->on(
-                error => sub {
-                    my ( $stream, $err ) = @_;
-                    $cb->( "$path: $err", 'NO' );
-                }
-            );
-
-            $stream->timeout($timeout);
-            $stream->write($cred);
+      $stream->on(
+        close => sub {
+          my $reply = unpack 'n/a*', $bytes;
+          $cb->(undef, $reply);
         }
-    );
-    return;
+      );
+
+      $stream->on(
+        error => sub {
+          my ($stream, $err) = @_;
+          $cb->("$path: $err", 'NO');
+        }
+      );
+
+      $stream->timeout($timeout);
+      $stream->write($cred);
+    }
+  );
+  return;
 }
 
 sub authorized {
-    my ( $c, $reply ) = @_;
+  my ($c, $reply) = @_;
 
-    return $c->render( status => 200, text => $reply, format => 'txt' );
+  return $c->render(status => 200, text => $reply, format => 'txt');
 }
 
 sub unauthorized {
-    my ( $c, $reply ) = @_;
+  my ($c, $reply) = @_;
 
-    my $realm = $c->req->headers->header('X-Realm') // 'Restricted';
-    $c->res->headers->www_authenticate(
-        'Basic realm=' . quote($realm) . ', charset="UTF-8"' );
-    $c->res->headers->cache_control('no-cache');
-    return $c->render( status => 401, text => $reply, format => 'txt' );
+  my $realm = $c->req->headers->header('X-Realm') // 'Restricted';
+  $c->res->headers->www_authenticate(
+    'Basic realm=' . quote($realm) . ', charset="UTF-8"');
+  $c->res->headers->cache_control('no-cache');
+  return $c->render(status => 401, text => $reply, format => 'txt');
 }
 
 sub error {
-    my ( $c, $err ) = @_;
+  my ($c, $err) = @_;
 
-    return $c->render( status => 503, text => $err, format => 'txt' );
+  return $c->render(status => 503, text => $err, format => 'txt');
 }
 
 get '/auth-basic' => sub {
-    my $c = shift;
+  my $c = shift;
 
-    my $auth = $c->req->headers->authorization // q{};
-    if ( substr( $auth, 0, 6 ) eq 'Basic ' ) {
-        my $cred = b64_decode( substr $auth, 6 ) // q{};
-        my ( $login, $pw ) = split /:/, $cred, 2;
-        if ( defined $login && defined $pw ) {
-            $c->render_later;
-            my $tx = $c->tx;
-            auth_cyrus(
-                $login, $pw,
-                sub {
-                    my ( $err, $reply ) = @_;
-                    return if $tx->is_finished;
-                    return error( $c, $err ) if defined $err;
-                    return unauthorized( $c, $reply )
-                        if substr( $reply, 0, 2 ) ne 'OK';
-                    return authorized( $c, $reply );
-                }
-            );
-            return;
+  my $auth = $c->req->headers->authorization // q{};
+  if (substr($auth, 0, 6) eq 'Basic ') {
+    my $cred = b64_decode(substr $auth, 6) // q{};
+    my ($login, $pw) = split /:/, $cred, 2;
+    if (defined $login && defined $pw) {
+      $c->render_later;
+      my $tx = $c->tx;
+      auth_cyrus(
+        $login, $pw,
+        sub {
+          my ($err, $reply) = @_;
+          return if $tx->is_finished;
+          return error($c, $err) if defined $err;
+          return unauthorized($c, $reply)
+            if substr($reply, 0, 2) ne 'OK';
+          return authorized($c, $reply);
         }
+      );
+      return;
     }
+  }
 
-    return unauthorized( $c, 'Unauthorized' );
+  return unauthorized($c, 'Unauthorized');
 };
 
 app->hook(
-    after_dispatch => sub {
-        my $c = shift;
-        $c->res->headers->remove('Server');
-    }
+  after_dispatch => sub {
+    my $c = shift;
+    $c->res->headers->remove('Server');
+  }
 );
 
 app->start;
