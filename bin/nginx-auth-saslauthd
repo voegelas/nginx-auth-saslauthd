@@ -2,9 +2,9 @@
 
 use Mojolicious::Lite;
 use Mojo::IOLoop;
-use Mojo::Util qw(b64_decode encode quote);
+use Mojo::Util qw(b64_decode decode encode quote);
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 
 sub find_mux {
   my @paths
@@ -30,8 +30,8 @@ sub auth_cyrus {
   my $path    = $config->{path};
   my $realm   = $config->{realm};
 
-  my $cred = pack 'n/a*n/a*n/a*n/a*', $login, $pw,
-    encode('UTF-8', $service), encode('UTF-8', $realm);
+  my $cred = pack 'n/a*n/a*n/a*n/a*', encode('UTF-8', $login),
+    encode('UTF-8', $pw), encode('UTF-8', $service), encode('UTF-8', $realm);
 
   my $bytes = "";
 
@@ -96,6 +96,7 @@ get '/auth-basic' => sub {
   my $auth = $c->req->headers->authorization // q{};
   if (substr($auth, 0, 6) eq 'Basic ') {
     my $cred = b64_decode(substr $auth, 6) // q{};
+    $cred = decode('UTF-8', $cred) // decode('ISO-8859-15', $cred) // q{};
     my ($login, $pw) = split /:/, $cred, 2;
     if (defined $login && defined $pw) {
       $c->render_later;
@@ -134,7 +135,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.006.
+This documentation refers to nginx-auth-saslauthd version 0.007.
 
 =head1 USAGE
 
