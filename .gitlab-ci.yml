@@ -1,0 +1,13 @@
+image: perl:5.26
+
+build_job:
+  stage: build
+  script:
+    - cpanm --installdeps .
+    - perl Makefile.PL
+    - make
+
+test_job:
+  stage: test
+  script:
+    - make test
