@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+0.008  2018-11-08 11:05:38 CET
+
+  - Reject empty passwords and login names.
+
 0.007  2018-09-25 23:28:47 CEST
 
   - Support Latin-1 encoded credentials.

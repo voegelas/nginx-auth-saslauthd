@@ -1,6 +1,6 @@
 package App::nginx_auth_saslauthd;
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 1;
 __END__

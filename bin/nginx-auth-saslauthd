@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 sub find_mux {
   my @paths
@@ -98,7 +98,7 @@ get '/auth-basic' => sub {
     my $cred = b64_decode(substr $auth, 6) // q{};
     $cred = decode('UTF-8', $cred) // decode('ISO-8859-15', $cred) // q{};
     my ($login, $pw) = split /:/, $cred, 2;
-    if (defined $login && defined $pw) {
+    if ($login && $pw) {
       $c->render_later;
       my $tx = $c->tx;
       auth_cyrus(
@@ -135,7 +135,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.007.
+This documentation refers to nginx-auth-saslauthd version 0.008.
 
 =head1 USAGE
 
