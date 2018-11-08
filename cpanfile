@@ -1,6 +1,6 @@
-requires 'perl', '5.010';
+requires 'perl', '5.016';
 
-requires 'Mojolicious', '7.27';
+requires 'Mojolicious', '8.0';
 
 on 'test' => sub {
     requires 'File::Spec';

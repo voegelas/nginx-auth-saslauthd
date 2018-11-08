@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use 5.010;
+use 5.016;
 
 use ExtUtils::MakeMaker;
 
@@ -17,12 +17,12 @@ my %WriteMakefileArgs = (
   ],
   NO_PACKLIST => 1,
   NO_PERLLOCAL => 1,
-  MIN_PERL_VERSION => '5.010',
+  MIN_PERL_VERSION => '5.016',
   CONFIGURE_REQUIRES => {
     'ExtUtils::MakeMaker' => 0
   },
   PREREQ_PM => {
-    'Mojolicious' => '7.27'
+    'Mojolicious' => '8.0'
   },
   TEST_REQUIRES => {
     'File::Spec' => 0,
@@ -38,18 +38,6 @@ my %WriteMakefileArgs = (
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.75_01) } ) {
   delete $WriteMakefileArgs{NO_PACKLIST};
   delete $WriteMakefileArgs{NO_PERLLOCAL};
-}
-
-unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
-  $WriteMakefileArgs{PREREQ_PM} = {
-    %{ $WriteMakefileArgs{PREREQ_PM} },
-    %{ $WriteMakefileArgs{TEST_REQUIRES} },
-  };
-  delete $WriteMakefileArgs{TEST_REQUIRES};
-}
-
-unless ( eval { ExtUtils::MakeMaker->VERSION(6.52) } ) {
-  delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
 }
 
 WriteMakefile(%WriteMakefileArgs);
