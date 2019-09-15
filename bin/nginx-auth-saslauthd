@@ -13,7 +13,7 @@ sub find_mux {
 }
 
 my $config = plugin Config => {
-  file => $ENV{MOJO_CONFIG} || '/etc/nginx/auth-saslauthd.conf',
+  file    => $ENV{MOJO_CONFIG} || '/etc/nginx/auth-saslauthd.conf',
   default => {
     path    => find_mux,
     timeout => 10,
@@ -107,8 +107,8 @@ get '/auth-basic' => sub {
           my ($err, $reply) = @_;
           return if $tx->is_finished;
           return error($c, $err) if defined $err;
-          return unauthorized($c, $reply)
-            if substr($reply, 0, 2) ne 'OK';
+          return error($c, 'no reply from saslauthd') if !defined $reply;
+          return unauthorized($c, $reply) if substr($reply, 0, 2) ne 'OK';
           return authorized($c, $reply);
         }
       );
