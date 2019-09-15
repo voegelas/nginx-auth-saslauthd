@@ -1,6 +1,6 @@
 # nginx-auth-saslauthd
 
-[![Build Status](https://travis-ci.org/voegelas/nginx-auth-saslauthd.svg?branch=master)](https://travis-ci.org/voegelas/nginx-auth-saslauthd) [![Coverage Status](https://coveralls.io/repos/github/voegelas/nginx-auth-saslauthd/badge.svg?branch=master)](https://coveralls.io/github/voegelas/nginx-auth-saslauthd?branch=master)
+[![Build Status](https://travis-ci.org/voegelas/nginx-auth-saslauthd.svg?branch=master)](https://travis-ci.org/voegelas/nginx-auth-saslauthd) [![Coverage Status](https://coveralls.io/repos/github/voegelas/nginx-auth-saslauthd/badge.svg?branch=master)](https://coveralls.io/github/voegelas/nginx-auth-saslauthd?branch=master) [![Kritika Analysis Status](https://kritika.io/users/voegelas/repos/2461460754275273/heads/master/status.svg)](https://kritika.io/users/voegelas/repos/2461460754275273/heads/master/)
 
 This nginx utility verifies web users with Basic authentication and LDAP, PAM
 or other mechanisms supported by saslauthd. Authentication requests are
