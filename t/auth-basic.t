@@ -90,4 +90,7 @@ $t->get_ok('/auth-basic' => {'Authorization' => "Basic $cred_bad"})
 kill 'TERM', $child_pid;
 waitpid $child_pid, 0;
 
+$t->get_ok('/auth-basic' => {'Authorization' => "Basic $cred_good"})
+  ->status_is(503);
+
 done_testing;

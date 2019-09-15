@@ -1,5 +1,7 @@
 # nginx-auth-saslauthd
 
+[![Build Status](https://travis-ci.org/voegelas/nginx-auth-saslauthd.svg?branch=master)](https://travis-ci.org/voegelas/nginx-auth-saslauthd) [![Coverage Status](https://coveralls.io/repos/github/voegelas/nginx-auth-saslauthd/badge.svg?branch=master)](https://coveralls.io/github/voegelas/nginx-auth-saslauthd?branch=master)
+
 This nginx utility verifies web users with Basic authentication and LDAP, PAM
 or other mechanisms supported by saslauthd. Authentication requests are
 forwarded from nginx with the
