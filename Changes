@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+1.000  2019-09-15 09:10:48 CET
+
+  - Check whether there's a reply from the saslauthd.
+
 0.008  2018-11-08 11:05:38 CET
 
   - Reject empty passwords and login names.

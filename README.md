@@ -49,7 +49,7 @@ git clone https://github.com/voegelas/nginx-auth-saslauthd.git
 
 ## LICENSE AND COPYRIGHT
 
-Copyright 2017-2018 Andreas Vögele
+Copyright 2017-2019 Andreas Vögele
 
 This program is free software; you can redistribute and modify it under the
 terms of the ISC license.

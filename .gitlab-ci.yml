@@ -1,4 +1,4 @@
-image: perl:5.26
+image: perl:5.30
 
 before_script:
   - cpanm --installdeps .

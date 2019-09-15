@@ -4,7 +4,7 @@ use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 
-our $VERSION = '0.008';
+our $VERSION = '1.000';
 
 sub find_mux {
   my @paths
@@ -135,7 +135,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 0.008.
+This documentation refers to nginx-auth-saslauthd version 1.000.
 
 =head1 USAGE
 
@@ -305,7 +305,7 @@ Please report any bugs to the author.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2017-2018 Andreas Voegele
+Copyright 2017-2019 Andreas Voegele
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
