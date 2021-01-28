@@ -1,6 +1,5 @@
 .gitignore
 .gitlab-ci.yml
-.travis.yml
 bin/nginx-auth-saslauthd
 Changes
 cpanfile
