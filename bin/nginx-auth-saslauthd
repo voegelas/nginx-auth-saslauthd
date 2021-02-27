@@ -7,9 +7,11 @@ use Mojo::Util qw(b64_decode decode encode quote);
 our $VERSION = '1.001';
 
 sub find_mux {
-  my @paths
-    = ('/run/saslauthd/mux', '/var/state/saslauthd/mux', '/var/sasl2/mux');
-  return ((grep {-S} @paths), '/var/run/saslauthd/mux')[0];
+  my @paths = (
+    '/run/saslauthd/mux',       '/var/run/saslauthd/mux',
+    '/var/state/saslauthd/mux', '/var/sasl2/mux',
+  );
+  return ((grep {-S} @paths), '/run/sasl2/mux')[0];
 }
 
 my $config = plugin Config => {
