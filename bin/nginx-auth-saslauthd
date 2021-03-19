@@ -3,8 +3,11 @@
 use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
+use English qw(-no_match_vars);
 
 our $VERSION = '1.001';
+
+local $PROGRAM_NAME = 'nginx-auth-saslauthd';
 
 sub find_mux {
   my @paths = (
