@@ -1,5 +1,10 @@
 Revision history for nginx-auth-saslauthd
 
+1.002  2021-03-20 19:34:07 CET
+
+  - The communications socket is /run/sasl2/mux on openSUSE.
+  - Update documentation and examples.
+
 1.001  2021-01-20 08:59:44 CET
 
   - Move project to GitLab.com.
