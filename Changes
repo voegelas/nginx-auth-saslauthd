@@ -1,5 +1,10 @@
 Revision history for nginx-auth-saslauthd
 
+1.003  2021-04-17 10:34:52 CET
+
+  - Add Fedora to the documentation.
+  - Link to the Open Build Service.
+
 1.002  2021-03-20 19:34:07 CET
 
   - The communications socket is /run/sasl2/mux on openSUSE.

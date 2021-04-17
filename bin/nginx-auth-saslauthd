@@ -1,11 +1,11 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 use English qw(-no_match_vars);
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 local $PROGRAM_NAME = 'nginx-auth-saslauthd';
 
@@ -252,6 +252,21 @@ Credential caching can be enabled by passing the B<-c> switch to B<saslauthd>.
 
 =head3 OPERATING SYSTEMS
 
+=head4 FEDORA
+
+Install the B<cyrus-sasl> package. Configure the authentication daemon in
+F</etc/sysconfig/saslauthd>. Enable the B<saslauthd.service> with
+B<systemctl>.
+
+    MECH=ldap
+    FLAGS="-c"
+
+If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
+
+    #%PAM-1.0
+    auth    include system-auth
+    account include system-auth
+
 =head4 OPENSUSE
 
 Install the B<cyrus-sasl-saslauthd> package. Configure the authentication
@@ -261,7 +276,7 @@ B<systemctl>.
     SASLAUTHD_AUTHMECH=ldap
     SASLAUTHD_PARAMS="-c"
 
-If you use PAM, create F</etc/pam.d/nginx>.
+If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
     #%PAM-1.0
     auth    include common-auth
@@ -276,7 +291,7 @@ daemon in F</etc/default/saslauthd>.
     MECHANISMS="ldap"
     OPTIONS="-c -m /run/saslauthd"
 
-If you use PAM, create F</etc/pam.d/nginx>.
+If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
     #%PAM-1.0
     @include common-auth

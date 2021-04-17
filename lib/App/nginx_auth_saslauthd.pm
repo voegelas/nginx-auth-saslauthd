@@ -3,7 +3,7 @@ package App::nginx_auth_saslauthd;
 use strict;
 use warnings;
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 1;
 __END__

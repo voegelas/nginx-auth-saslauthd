@@ -22,7 +22,9 @@ location = /auth {
 
 ## INSTALLATION
 
-To install the program, run the following commands:
+The [Open Build Service](https://build.opensuse.org/package/show/home:voegelas/nginx-auth-saslauthd) provides binary and source packages.
+
+To install the program manually, run the following commands:
 
 ```
 perl Makefile.PL
