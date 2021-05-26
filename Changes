@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+1.004  2021-05-26 06:50:08 CEST
+
+  - Lower required Mojolicious version.
+
 1.003  2021-04-17 10:34:52 CET
 
   - Add Fedora to the documentation.

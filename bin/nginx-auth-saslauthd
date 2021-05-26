@@ -5,7 +5,7 @@ use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 use English qw(-no_match_vars);
 
-our $VERSION = '1.003';
+our $VERSION = '1.004';
 
 local $PROGRAM_NAME = 'nginx-auth-saslauthd';
 
