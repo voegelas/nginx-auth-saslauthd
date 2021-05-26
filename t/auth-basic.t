@@ -9,6 +9,12 @@ use File::Temp qw(tempdir);
 use IO::Socket::UNIX;
 use Mojo::Util qw(b64_encode decode);
 
+require Mojolicious;
+use version 0.77;
+if (version->parse($Mojolicious::VERSION) < version->parse(8.0)) {
+  plan skip_all => 'the tests require Mojolicious 8.0';
+}
+
 my @good_values = map { decode('ISO-8859-1', $_) }
   ("Lemmy", "Mot\366rhead", "Moj\366licious", "moj\366licious.org");
 my $cred_good = b64_encode("Lemmy:Mot\303\266rhead", q{});

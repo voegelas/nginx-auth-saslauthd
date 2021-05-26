@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
     'ExtUtils::MakeMaker' => 0
   },
   PREREQ_PM => {
-    'Mojolicious' => '8.0'
+    'Mojolicious' => '7.27'
   },
   TEST_REQUIRES => {
     'File::Spec' => 0,

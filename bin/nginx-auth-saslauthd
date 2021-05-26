@@ -372,7 +372,7 @@ Test the running service with B<curl>.
 
 =head1 DEPENDENCIES
 
-Requires Mojolicious 8.0 or later and the saslauthd daemon from Cyrus SASL.
+Requires Mojolicious 7.27 or later and the saslauthd daemon from Cyrus SASL.
 
 =head1 INCOMPATIBILITIES
 

@@ -35,7 +35,7 @@ make install
 
 ## DEPENDENCIES
 
-This program requires [Mojolicious](http://mojolicious.org/) 8.0 or later and
+This program requires [Mojolicious](http://mojolicious.org/) 7.27 or later and
 the saslauthd daemon from Cyrus SASL.
 
 ## SUPPORT AND DOCUMENTATION
