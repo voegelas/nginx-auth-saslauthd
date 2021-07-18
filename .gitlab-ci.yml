@@ -7,4 +7,5 @@ before_script:
 
 test_job:
   script:
-    - make test
+    - cpanm Devel::Cover
+    - cover -test
