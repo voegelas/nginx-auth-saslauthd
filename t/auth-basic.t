@@ -1,3 +1,7 @@
+#!perl
+
+# SPDX-License-Identifier: ISC
+
 use strict;
 use warnings;
 

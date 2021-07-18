@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# SPDX-License-Identifier: ISC
+
 use Mojolicious::Lite;
 use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
@@ -385,7 +387,7 @@ L<https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
 
 =head1 AUTHOR
 
-Andreas Voegele E<lt>voegelas@cpan.orgE<gt>
+Andreas Vögele E<lt>voegelas@cpan.orgE<gt>
 
 =head1 BUGS AND LIMITATIONS
 
@@ -396,7 +398,7 @@ Please report any bugs to the author.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2017-2021 Andreas Voegele
+Copyright 2017-2021 Andreas Vögele
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

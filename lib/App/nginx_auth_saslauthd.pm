@@ -1,5 +1,7 @@
 package App::nginx_auth_saslauthd;
 
+# SPDX-License-Identifier: ISC
+
 use strict;
 use warnings;
 
