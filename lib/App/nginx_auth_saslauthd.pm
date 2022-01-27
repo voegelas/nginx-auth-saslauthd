@@ -5,7 +5,7 @@ package App::nginx_auth_saslauthd;
 use strict;
 use warnings;
 
-our $VERSION = '1.004';
+our $VERSION = '1.005';
 
 1;
 __END__
@@ -16,11 +16,6 @@ App::nginx_auth_saslauthd - Verify web users with Basic authentication and sasla
 
 =head1 DESCRIPTION
 
-See L<nginx-auth-saslauthd>. The module L<App::nginx_auth_saslauthd> is just a
-placeholder for CPAN.
-
-=head1 SEE ALSO
-
-L<nginx-auth-saslauthd>.
+See L<nginx-auth-saslauthd>. This module is just a placeholder.
 
 =cut

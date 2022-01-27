@@ -6,52 +6,40 @@ forwarded from nginx with the
 [auth_request](https://nginx.org/en/docs/http/ngx_http_auth_request_module.html)
 directive.
 
-```Nginx
-location /private/ {
-    auth_request /auth;
-}
+    location /private/ {
+        auth_request /auth;
+    }
 
-location = /auth {
-    internal;
-    proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
-    proxy_pass_request_body off;
-    proxy_set_header Content-Length "";
-    proxy_set_header X-Realm "Restricted";
-}
-```
-
-## INSTALLATION
-
-The [Open Build Service](https://build.opensuse.org/package/show/home:voegelas/nginx-auth-saslauthd) provides binary and source packages.
-
-To install the program manually, run the following commands:
-
-```
-perl Makefile.PL
-make
-make test
-make install
-```
+    location = /auth {
+        internal;
+        proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Realm "Restricted";
+    }
 
 ## DEPENDENCIES
 
-This program requires [Mojolicious](http://mojolicious.org/) 7.27 or later and
+This program requires [Mojolicious](https://mojolicious.org/) 7.27 or later and
 the saslauthd daemon from Cyrus SASL.
 
-## SUPPORT AND DOCUMENTATION
+## INSTALLATION
 
-Type "man nginx-auth-saslauthd" after installation to see the program usage
-information.
+Run the following commands to install the software:
 
-If you want to hack on the source, grab the latest version using the command:
+    perl Makefile.PL INSTALLSITESCRIPT=/usr/local/sbin \
+        INSTALLSITEMAN1DIR=/usr/local/share/man/man8 MAN1EXT=8
+    make MAN1SECTION=8
+    make test
+    make install
 
-```
-git clone https://gitlab.com/voegelas/nginx-auth-saslauthd.git
-```
+Type the following command to see the program usage information:
+
+    man nginx-auth-saslauthd
 
 ## LICENSE AND COPYRIGHT
 
-Copyright 2017-2021 Andreas Vögele
+Copyright 2017-2022 Andreas Vögele
 
 This program is free software; you can redistribute and modify it under the
 terms of the ISC license.

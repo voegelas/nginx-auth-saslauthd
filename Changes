@@ -1,59 +1,65 @@
 Revision history for nginx-auth-saslauthd
 
+1.005  2022-01-27 18:10:47 CET
+
+  - Update the documentation
+  - Add a section on SELinux
+  - Add CONTRIBUTING.md
+
 1.004  2021-05-26 06:50:08 CEST
 
-  - Lower required Mojolicious version.
+  - Lower the required Mojolicious version
 
 1.003  2021-04-17 10:34:52 CET
 
-  - Add Fedora to the documentation.
-  - Link to the Open Build Service.
+  - Add Fedora to the documentation
+  - Link to the Open Build Service
 
 1.002  2021-03-20 19:34:07 CET
 
-  - The communications socket is /run/sasl2/mux on openSUSE.
-  - Update documentation and examples.
+  - The communications socket is /run/sasl2/mux on openSUSE
+  - Update the documentation and the examples
 
 1.001  2021-01-20 08:59:44 CET
 
-  - Move project to GitLab.com.
+  - Move the project to GitLab.com
 
 1.000  2019-09-15 09:10:48 CET
 
-  - Check whether there's a reply from the saslauthd.
+  - Check whether there's a reply from the saslauthd
 
 0.008  2018-11-08 11:05:38 CET
 
-  - Reject empty passwords and login names.
+  - Reject empty passwords and login names
 
 0.007  2018-09-25 23:28:47 CEST
 
-  - Support Latin-1 encoded credentials.
+  - Support Latin-1 encoded credentials
 
 0.006  2018-09-18 04:04:12 CEST
 
-  - Read the configuration from /etc/nginx/auth-saslauthd.conf.
+  - Read the configuration from /etc/nginx/auth-saslauthd.conf
 
 0.005  2017-11-25 12:16:09 CET
 
-  - Prepare for a possible CPAN release.
+  - Prepare for a possible CPAN release
 
 0.004  2017-11-14 05:30:30 CET
 
-  - Accumulate the saslauthd daemon's reply.
+  - Accumulate the saslauthd daemon's reply
 
 0.003  2017-11-08 07:49:29 CET
 
-  - Ask the client to encode the credentials in UTF-8.
-  - Encode the SASL realm and service in UTF-8.
-  - The realm for Basic authentication must only contain ASCII characters.
+  - Ask the client to encode the credentials in UTF-8
+  - Encode the SASL realm and service in UTF-8
+  - The realm for Basic authentication must only contain ASCII characters
 
 0.002  2017-11-07 09:12:36 CET
 
-  - Check whether the HTTP connection has been closed early.
-  - Raise the default saslauthd timeout from 5 to 10 seconds.
+  - Check whether the HTTP connection has been closed early
+  - Raise the default saslauthd timeout from 5 to 10 seconds
 
 0.001  2017-11-05 18:59:51 CET
 
-  - First version, released on an unsuspecting world.
+  - First version, released on an unsuspecting world
 

@@ -8,9 +8,8 @@ use warnings;
 use Test::More;
 use Test::Mojo;
 
-use File::Spec::Functions qw(catfile);
-use File::Temp qw(tempdir);
 use IO::Socket::UNIX;
+use Mojo::File qw(path tempdir);
 use Mojo::Util qw(b64_encode decode);
 
 require Mojolicious;
@@ -24,9 +23,9 @@ my @good_values = map { decode('ISO-8859-1', $_) }
 my $cred_good = b64_encode("Lemmy:Mot\303\266rhead", q{});
 my $cred_bad  = b64_encode("Lemmy:Motorhead",        q{});
 
-my $dir = tempdir(CLEANUP => 1);
-my $path = catfile($dir, 'mux');
-$ENV{MOJO_CONFIG} = catfile($dir, 'nonexistent.conf');
+my $dir = tempdir;
+my $path = path($dir, 'mux');
+$ENV{MOJO_CONFIG} = path($dir, 'nonexistent.conf');
 
 my $child_is_ready = 0;
 $SIG{USR1} = sub { $child_is_ready = 1 };
@@ -79,7 +78,7 @@ sleep 5;
 plan skip_all => 'could not create socket' if !$child_is_ready;
 
 my $t = Test::Mojo->new(
-  Mojo::File->new('bin/nginx-auth-saslauthd'),
+  path(qw(bin nginx-auth-saslauthd)),
   { path    => $path,
     timeout => 5,
     service => $good_values[2],

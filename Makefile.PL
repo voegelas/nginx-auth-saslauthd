@@ -22,13 +22,20 @@ my %WriteMakefileArgs = (
     'ExtUtils::MakeMaker' => 0
   },
   PREREQ_PM => {
-    'Mojolicious' => '7.27'
+    'English' => 0,
+    'Mojo::IOLoop' => 0,
+    'Mojo::Util' => 0,
+    'Mojolicious' => '7.27',
+    'Mojolicious::Lite' => 0,
+    'strict' => 0,
+    'warnings' => 0
   },
   TEST_REQUIRES => {
-    'File::Spec' => 0,
-    'File::Temp' => 0,
+    'Mojo::File' => 0,
     'IO::Socket::UNIX' => 0,
-    'Test::More' => '0.96'
+    'Test::Mojo' => 0,
+    'Test::More' => '0.96',
+    'version' => '0.77'
   },
   test => {
     TESTS => 't/*.t'

@@ -7,7 +7,7 @@ use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 use English qw(-no_match_vars);
 
-our $VERSION = '1.004';
+our $VERSION = '1.005';
 
 local $PROGRAM_NAME = 'nginx-auth-saslauthd';
 
@@ -136,27 +136,29 @@ app->hook(
 app->start;
 __END__
 
+=encoding UTF-8
+
 =head1 NAME
 
 nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-This documentation refers to nginx-auth-saslauthd version 1.002.
+version 1.005
 
 =head1 USAGE
 
-    location /private/ {
-        auth_request /auth;
-    }
+  location /private/ {
+    auth_request /auth;
+  }
 
-    location = /auth {
-        internal;
-        proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
-        proxy_pass_request_body off;
-        proxy_set_header Content-Length "";
-        proxy_set_header X-Realm "Restricted";
-    }
+  location = /auth {
+    internal;
+    proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header X-Realm "Restricted";
+  }
 
 =head1 DESCRIPTION
 
@@ -171,12 +173,12 @@ directive.
 Create the file F</etc/nginx/auth-saslauthd.conf> if the default values do not
 fit.
 
-    {
-        path    => '/run/saslauthd/mux',
-        timeout => 10,
-        service => 'nginx',
-        realm   => '',
-    };
+  {
+    path    => '/run/saslauthd/mux',
+    timeout => 10,
+    service => 'nginx',
+    realm   => '',
+  };
 
 =over 4
 
@@ -207,48 +209,48 @@ Use the B<auth_request> directive to enable authentication. Set the
 B<X-Realm> header to the realm for Basic authentication. The realm must only
 contain ASCII characters.
 
-    location /private/ {
-        auth_request /auth;
-    }
+  location /private/ {
+    auth_request /auth;
+  }
 
-    location = /auth {
-        internal;
-        proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
-        proxy_pass_request_body off;
-        proxy_set_header Content-Length "";
-        proxy_set_header X-Realm "Restricted";
-    }
+  location = /auth {
+    internal;
+    proxy_pass http://unix:/run/nginx-auth/saslauthd.sock:/auth-basic;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header X-Realm "Restricted";
+  }
 
 B<nginx> can be configured to cache authentication requests, but the
 credentials will be stored in cleartext.
 
-    http {
-        ...
-        proxy_cache_path /var/cache/nginx/auth_cache keys_zone=auth_cache:1m;
+  http {
+    ...
+    proxy_cache_path /var/cache/nginx/auth_cache keys_zone=auth_cache:1m;
 
-        server {
-            ...
-            location = /auth {
-                ...
-                proxy_cache auth_cache
-                proxy_cache_key "$http_authorization";
-                proxy_cache_valid 200 10m;
-            }
-        }
+    server {
+      ...
+      location = /auth {
+        ...
+        proxy_cache auth_cache
+        proxy_cache_key "$http_authorization";
+        proxy_cache_valid 200 10m;
+      }
     }
+  }
 
 =head2 SASLAUTHD
 
 If you use LDAP, create F</etc/saslauthd.conf>.
 
-    ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
-    ldap_start_tls: yes
-    ldap_tls_cacert_file: /etc/ssl/certs/EXAMPLE-ADS-CA.pem
-    ldap_tls_check_peer: yes
-    ldap_search_base: OU=Users,DC=EXAMPLE,DC=COM
-    ldap_filter: (sAMAccountName=%U)
-    ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
-    ldap_password: secret
+  ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
+  ldap_start_tls: yes
+  ldap_tls_cacert_file: /etc/ssl/certs/EXAMPLE-ADS-CA.pem
+  ldap_tls_check_peer: yes
+  ldap_search_base: OU=Users,DC=EXAMPLE,DC=COM
+  ldap_filter: (sAMAccountName=%U)
+  ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
+  ldap_password: secret
 
 Credential caching can be enabled by passing the B<-c> switch to B<saslauthd>.
 
@@ -260,14 +262,14 @@ Install the B<cyrus-sasl> package. Configure the authentication daemon in
 F</etc/sysconfig/saslauthd>. Enable the B<saslauthd.service> with
 B<systemctl>.
 
-    MECH=ldap
-    FLAGS="-c"
+  MECH=ldap
+  FLAGS="-c"
 
 If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
-    #%PAM-1.0
-    auth    include system-auth
-    account include system-auth
+  #%PAM-1.0
+  auth    include system-auth
+  account include system-auth
 
 =head4 OPENSUSE
 
@@ -275,42 +277,51 @@ Install the B<cyrus-sasl-saslauthd> package. Configure the authentication
 daemon in F</etc/sysconfig/saslauthd>. Enable the B<saslauthd.service> with
 B<systemctl>.
 
-    SASLAUTHD_AUTHMECH=ldap
-    SASLAUTHD_PARAMS="-c"
+  SASLAUTHD_AUTHMECH=ldap
+  SASLAUTHD_PARAMS="-c"
 
 If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
-    #%PAM-1.0
-    auth    include common-auth
-    account include common-account
+  #%PAM-1.0
+  auth    include common-auth
+  account include common-account
 
 =head4 UBUNTU
 
 Install the B<sasl2-bin> package. Enable and configure the authentication
 daemon in F</etc/default/saslauthd>.
 
-    START=yes
-    MECHANISMS="ldap"
-    OPTIONS="-c -m /run/saslauthd"
+  START=yes
+  MECHANISMS="ldap"
+  OPTIONS="-c -m /run/saslauthd"
 
 If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
-    #%PAM-1.0
-    @include common-auth
-    @include common-account
+  #%PAM-1.0
+  @include common-auth
+  @include common-account
 
 =head3 AUTHENTICATION TEST
 
 Start the B<saslauthd> daemon and check your setup with B<testsaslauthd>.
 
-    unset HISTFILE
-    /usr/sbin/testsaslauthd -s nginx -u $USER -p 'your password'
+  unset HISTFILE
+  /usr/sbin/testsaslauthd -s nginx -u $USER -p 'your password'
+
+=head2 SELINUX
+
+Put the B<nginx-auth-saslauthd> daemon into the web server's SELinux context
+and allow the daemon to use SASL.
+
+  semanage fcontext -a -t httpd_exec_t /usr/local/sbin/nginx-auth-saslauthd
+  restorecon /usr/local/sbin/nginx-auth-saslauthd
+  setsebool -P httpd_use_sasl on
 
 =head2 SYSTEMD
 
 Create a new system user.
 
-    useradd -r -M -d /nonexistent -s /usr/sbin/nologin -U nginx-auth
+  useradd -r -M -d /nonexistent -s /usr/sbin/nologin -U nginx-auth
 
 Create F</etc/systemd/system/nginx-auth-saslauthd.service> and enable the
 service with B<systemctl>.
@@ -319,58 +330,58 @@ The below example is for Ubuntu. On other systems the group may be B<nginx>
 instead of B<www-data> and no supplementary group may be required to
 communicate with the B<saslauthd> daemon.
 
-    [Unit]
-    Description=Basic authentication with saslauthd
-    After=network.target saslauthd.service
-    Before=nginx.service
+  [Unit]
+  Description=Basic authentication with saslauthd
+  After=network.target saslauthd.service
+  Before=nginx.service
 
-    [Service]
-    Type=simple
-    User=nginx-auth
-    Group=www-data
-    SupplementaryGroups=sasl
-    RuntimeDirectory=nginx-auth
-    RuntimeDirectoryMode=0750
-    UMask=0007
-    ExecStart=/usr/local/bin/nginx-auth-saslauthd daemon -m production \
-              -l http+unix://%%2Frun%%2Fnginx-auth%%2Fsaslauthd.sock
-    CapabilityBoundingSet=
-    DevicePolicy=closed
-    IPAddressDeny=any
-    LockPersonality=yes
-    MemoryDenyWriteExecute=yes
-    NoNewPrivileges=yes
-    ProtectSystem=strict
-    ProtectHome=yes
-    PrivateNetwork=yes
-    PrivateTmp=yes
-    PrivateDevices=yes
-    PrivateUsers=yes
-    ProtectHostname=yes
-    ProtectClock=yes
-    ProtectKernelTunables=yes
-    ProtectKernelModules=yes
-    ProtectKernelLogs=yes
-    ProtectControlGroups=yes
-    ProtectProc=invisible
-    ProcSubset=pid
-    RestrictAddressFamilies=AF_UNIX
-    RestrictNamespaces=yes
-    RestrictRealtime=yes
-    RestrictSUIDSGID=yes
-    RemoveIPC=yes
-    SystemCallArchitectures=native
-    SystemCallFilter=@system-service
-    SystemCallFilter=~@privileged
-    SystemCallFilter=~@resources
+  [Service]
+  Type=simple
+  User=nginx-auth
+  Group=www-data
+  SupplementaryGroups=sasl
+  RuntimeDirectory=nginx-auth
+  RuntimeDirectoryMode=0750
+  UMask=0007
+  ExecStart=/usr/local/sbin/nginx-auth-saslauthd daemon -m production \
+            -l http+unix://%%2Frun%%2Fnginx-auth%%2Fsaslauthd.sock
+  CapabilityBoundingSet=
+  DevicePolicy=closed
+  IPAddressDeny=any
+  LockPersonality=yes
+  MemoryDenyWriteExecute=yes
+  NoNewPrivileges=yes
+  ProtectSystem=strict
+  ProtectHome=yes
+  PrivateNetwork=yes
+  PrivateTmp=yes
+  PrivateDevices=yes
+  PrivateUsers=yes
+  ProtectHostname=yes
+  ProtectClock=yes
+  ProtectKernelTunables=yes
+  ProtectKernelModules=yes
+  ProtectKernelLogs=yes
+  ProtectControlGroups=yes
+  ProtectProc=invisible
+  ProcSubset=pid
+  RestrictAddressFamilies=AF_UNIX
+  RestrictNamespaces=yes
+  RestrictRealtime=yes
+  RestrictSUIDSGID=yes
+  RemoveIPC=yes
+  SystemCallArchitectures=native
+  SystemCallFilter=@system-service
+  SystemCallFilter=~@privileged
+  SystemCallFilter=~@resources
 
-    [Install]
-    WantedBy=multi-user.target
+  [Install]
+  WantedBy=multi-user.target
 
 Test the running service with B<curl>.
 
-    curl -v --unix-socket /run/nginx-auth/saslauthd.sock \
-         -H "X-Realm: hello, world" http://localhost/auth-basic
+  curl -v --unix-socket /run/nginx-auth/saslauthd.sock \
+       -H "X-Realm: hello, world" http://localhost/auth-basic
 
 =head1 DEPENDENCIES
 
@@ -382,7 +393,7 @@ None known.
 
 =head1 SEE ALSO
 
-Mojolicious, Mojolicious::Guides::Cookbook, saslauthd(8),
+L<Mojolicious>, L<Mojolicious::Guides::Cookbook>, saslauthd(8),
 L<https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
 
 =head1 AUTHOR
@@ -394,11 +405,9 @@ Andreas Vögele E<lt>voegelas@cpan.orgE<gt>
 Basic authentication doesn't encrypt the credentials. Protect your site with
 HTTPS.
 
-Please report any bugs to the author.
-
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2017-2021 Andreas Vögele
+Copyright 2017-2022 Andreas Vögele
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

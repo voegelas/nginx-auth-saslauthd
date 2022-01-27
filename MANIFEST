@@ -2,6 +2,7 @@
 .gitlab-ci.yml
 bin/nginx-auth-saslauthd
 Changes
+CONTRIBUTING.md
 cpanfile
 lib/App/nginx_auth_saslauthd.pm
 LICENSE
