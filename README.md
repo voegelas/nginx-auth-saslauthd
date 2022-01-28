@@ -21,7 +21,7 @@ directive.
 ## DEPENDENCIES
 
 This program requires [Mojolicious](https://mojolicious.org/) 7.27 or later and
-the saslauthd daemon from Cyrus SASL.
+the saslauthd daemon from [Cyrus SASL](https://www.cyrusimap.org/sasl/).
 
 ## INSTALLATION
 
