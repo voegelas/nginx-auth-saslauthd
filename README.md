@@ -1,8 +1,8 @@
 # nginx-auth-saslauthd
 
-This nginx utility verifies web users with Basic authentication and LDAP, PAM
-or other mechanisms supported by saslauthd. Authentication requests are
-forwarded from nginx with the
+This [nginx](https://nginx.org/) utility verifies web users with Basic
+authentication and LDAP, PAM or other mechanisms supported by saslauthd.
+Authentication requests are forwarded from nginx with the
 [auth_request](https://nginx.org/en/docs/http/ngx_http_auth_request_module.html)
 directive.
 

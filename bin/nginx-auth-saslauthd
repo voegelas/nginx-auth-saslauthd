@@ -162,9 +162,9 @@ version 1.005
 
 =head1 DESCRIPTION
 
-B<nginx-auth-saslauthd> interfaces the B<nginx> web server with the
-B<saslauthd> daemon.  The service supports Basic authentication and verifies
-users with LDAP, PAM or other mechanisms supported by B<saslauthd>.
+B<nginx-auth-saslauthd> interfaces the L<nginx|https://nginx.org/> web server
+with the B<saslauthd> daemon.  The service supports Basic authentication and
+verifies users with LDAP, PAM or other mechanisms supported by B<saslauthd>.
 Authentication requests are forwarded from B<nginx> with the B<auth_request>
 directive.
 
