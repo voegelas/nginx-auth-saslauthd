@@ -243,6 +243,11 @@ credentials will be stored in cleartext.
 
 If you use LDAP, create F</etc/saslauthd.conf>.
 
+  touch /etc/saslauthd.conf
+  chmod 0600 /etc/saslauthd.conf
+
+Add your LDAP settings.
+
   ldap_servers: ldap://ad1.example.com ldap://ad2.example.com
   ldap_start_tls: yes
   ldap_tls_cacert_file: /etc/ssl/certs/EXAMPLE-ADS-CA.pem
@@ -264,6 +269,12 @@ B<systemctl>.
 
   MECH=ldap
   FLAGS="-c"
+
+Read the saslauthd(8) manual page for information on how to run the saslauthd
+daemon unprivileged as user saslauth.
+
+  chgrp saslauth /etc/saslauthd.conf
+  chmod 0640 /etc/saslauthd.conf
 
 If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
@@ -293,6 +304,7 @@ daemon in F</etc/default/saslauthd>.
 
   START=yes
   MECHANISMS="ldap"
+  MECH_OPTIONS=""
   OPTIONS="-c -m /run/saslauthd"
 
 If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
