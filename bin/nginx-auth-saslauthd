@@ -199,7 +199,8 @@ The SASL service name. Defaults to "nginx".
 
 =item realm
 
-The SASL realm to which the users belong. Defaults to the empty string.
+The SASL realm to which the users belong. Defaults to the empty string. The
+SASL realm is not the authentication realm.
 
 =back
 
@@ -339,8 +340,9 @@ Create F</etc/systemd/system/nginx-auth-saslauthd.service> and enable the
 service with B<systemctl>.
 
 The below example is for Ubuntu. On other systems the group may be B<nginx>
-instead of B<www-data> and no supplementary group may be required to
-communicate with the B<saslauthd> daemon.
+instead of B<www-data> and the supplementary group B<saslauth> or no
+supplementary group may be required to communicate with the B<saslauthd>
+daemon.
 
   [Unit]
   Description=Basic authentication with saslauthd
