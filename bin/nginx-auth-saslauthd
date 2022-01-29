@@ -184,31 +184,31 @@ fit.
 
 =item path
 
-The path to the communications socket. Defaults to F</run/saslauthd/mux>,
+The path to the communications socket.  Defaults to F</run/saslauthd/mux>,
 F</run/sasl2/mux>, F</var/run/saslauthd/mux>, F</var/state/saslauthd/mux> or
 F</var/sasl2/mux>, depending on the platform.
 
 =item timeout
 
-A timeout when writing to and reading from the communications socket. Defaults
-to 10 seconds.
+A timeout when writing to and reading from the communications socket.
+Defaults to 10 seconds.
 
 =item service
 
-The SASL service name. Defaults to "nginx".
+The SASL service name.  Defaults to "nginx".
 
 =item realm
 
-The SASL realm to which the users belong. Defaults to the empty string. The
-SASL realm is not the authentication realm.
+The SASL realm the users belong to.  Defaults to the empty string.  The SASL
+realm is not the authentication realm.
 
 =back
 
 =head2 NGINX
 
-Use the B<auth_request> directive to enable authentication. Set the
-B<X-Realm> header to the realm for Basic authentication. The realm must only
-contain ASCII characters.
+Use the B<auth_request> directive to enable authentication.  Set the
+B<X-Realm> header to the authentication realm.  The realm must only contain
+ASCII characters.
 
   location /private/ {
     auth_request /auth;
@@ -262,11 +262,26 @@ Credential caching can be enabled by passing the B<-c> switch to B<saslauthd>.
 
 =head3 OPERATING SYSTEMS
 
+=head4 DEBIAN AND UBUNTU
+
+Install the B<sasl2-bin> package.  Enable and configure the authentication
+daemon in F</etc/default/saslauthd>.
+
+  START=yes
+  MECHANISMS="ldap"
+  MECH_OPTIONS=""
+  OPTIONS="-c -m /run/saslauthd"
+
+If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
+
+  #%PAM-1.0
+  @include common-auth
+  @include common-account
+
 =head4 FEDORA
 
-Install the B<cyrus-sasl> package. Configure the authentication daemon in
-F</etc/sysconfig/saslauthd>. Enable the B<saslauthd.service> with
-B<systemctl>.
+Install the B<cyrus-sasl> package.  Configure the authentication daemon in
+F</etc/sysconfig/saslauthd>.
 
   MECH=ldap
   FLAGS="-c"
@@ -283,11 +298,24 @@ If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
   auth    include system-auth
   account include system-auth
 
+=head4 MAGEIA
+
+Install the B<cyrus-sasl> package.  Configure the authentication daemon in
+F</etc/sysconfig/saslauthd>.
+
+  SASL_AUTHMECH=ldap
+  SASLAUTHD_OPTS="-c"
+
+If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
+
+  #%PAM-1.0
+  auth    include system-auth
+  account include system-auth
+
 =head4 OPENSUSE
 
-Install the B<cyrus-sasl-saslauthd> package. Configure the authentication
-daemon in F</etc/sysconfig/saslauthd>. Enable the B<saslauthd.service> with
-B<systemctl>.
+Install the B<cyrus-sasl-saslauthd> package.  Configure the authentication
+daemon in F</etc/sysconfig/saslauthd>.
 
   SASLAUTHD_AUTHMECH=ldap
   SASLAUTHD_PARAMS="-c"
@@ -298,25 +326,16 @@ If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
   auth    include common-auth
   account include common-account
 
-=head4 UBUNTU
+=head3 START SASLAUTHD
 
-Install the B<sasl2-bin> package. Enable and configure the authentication
-daemon in F</etc/default/saslauthd>.
+Enable the B<saslauthd.service>.
 
-  START=yes
-  MECHANISMS="ldap"
-  MECH_OPTIONS=""
-  OPTIONS="-c -m /run/saslauthd"
-
-If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
-
-  #%PAM-1.0
-  @include common-auth
-  @include common-account
+  systemctl enable saslauthd.service
+  systemctl restart saslauthd.service
 
 =head3 AUTHENTICATION TEST
 
-Start the B<saslauthd> daemon and check your setup with B<testsaslauthd>.
+Check your setup with B<testsaslauthd>.
 
   unset HISTFILE
   /usr/sbin/testsaslauthd -s nginx -u $USER -p 'your password'
@@ -332,17 +351,18 @@ and allow the daemon to use SASL.
 
 =head2 SYSTEMD
 
-Create a new system user.
+Install the package libnss-systemd on Debian-based systems.
 
-  useradd -r -M -d /nonexistent -s /usr/sbin/nologin -U nginx-auth
+Users, who do not use "systemd" in F<nsswitch.conf>, need to omit DynamicUser
+from the service file and create a system user.
 
-Create F</etc/systemd/system/nginx-auth-saslauthd.service> and enable the
-service with B<systemctl>.
+  useradd -r -M -d / -s /sbin/nologin -U nginx-auth
 
-The below example is for Ubuntu. On other systems the group may be B<nginx>
-instead of B<www-data> and the supplementary group B<saslauth> or no
-supplementary group may be required to communicate with the B<saslauthd>
-daemon.
+Create F</etc/systemd/system/nginx-auth-saslauthd.service>.  The example below
+is for Debian-based systems.  On RPM-based systems, the group is B<nginx>
+instead of B<www-data>.  Use the supplementary group B<saslauth> on operating
+systems from Red Hat.  Other systems may not require a supplementary group to
+communicate with the B<saslauthd> daemon.
 
   [Unit]
   Description=Basic authentication with saslauthd
@@ -351,6 +371,7 @@ daemon.
 
   [Service]
   Type=simple
+  DynamicUser=yes
   User=nginx-auth
   Group=www-data
   SupplementaryGroups=sasl
@@ -392,14 +413,19 @@ daemon.
   [Install]
   WantedBy=multi-user.target
 
-Test the running service with B<curl>.
+Start the service.
+
+  systemctl --now enable nginx-auth-saslauthd.service
+
+Test the running service.
 
   curl -v --unix-socket /run/nginx-auth/saslauthd.sock \
        -H "X-Realm: hello, world" http://localhost/auth-basic
 
 =head1 DEPENDENCIES
 
-Requires Mojolicious 7.27 or later and the saslauthd daemon from Cyrus SASL.
+Requires Mojolicious 7.27 or later and the saslauthd daemon from L<Cyrus
+SASL|https://www.cyrusimap.org/sasl/>.
 
 =head1 INCOMPATIBILITIES
 
@@ -416,7 +442,7 @@ Andreas Vögele E<lt>voegelas@cpan.orgE<gt>
 
 =head1 BUGS AND LIMITATIONS
 
-Basic authentication doesn't encrypt the credentials. Protect your site with
+Basic authentication doesn't encrypt the credentials.  Protect your site with
 HTTPS.
 
 =head1 LICENSE AND COPYRIGHT
