@@ -1,5 +1,9 @@
 Revision history for nginx-auth-saslauthd
 
+1.006  2022-01-20 11:40:21 CET
+
+  - Add DynamicUser to the systemd example
+
 1.005  2022-01-27 18:10:47 CET
 
   - Update the documentation

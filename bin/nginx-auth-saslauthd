@@ -7,7 +7,7 @@ use Mojo::IOLoop;
 use Mojo::Util qw(b64_decode decode encode quote);
 use English qw(-no_match_vars);
 
-our $VERSION = '1.005';
+our $VERSION = '1.006';
 
 local $PROGRAM_NAME = 'nginx-auth-saslauthd';
 
@@ -144,7 +144,7 @@ nginx-auth-saslauthd - Verify web users with Basic authentication and saslauthd
 
 =head1 VERSION
 
-version 1.005
+version 1.006
 
 =head1 USAGE
 
