@@ -163,10 +163,10 @@ version 1.006
 =head1 DESCRIPTION
 
 B<nginx-auth-saslauthd> interfaces the L<nginx|https://nginx.org/> web server
-with the B<saslauthd> daemon.  The service supports Basic authentication and
-verifies users with LDAP, PAM or other mechanisms supported by B<saslauthd>.
-Authentication requests are forwarded from B<nginx> with the B<auth_request>
-directive.
+with the B<saslauthd> daemon from L<Cyrus SASL|https://www.cyrusimap.org/sasl/>.
+The service supports Basic authentication and verifies users with LDAP, PAM or
+other mechanisms supported by saslauthd.  Authentication requests are
+forwarded from nginx with the C<auth_request> directive.
 
 =head1 CONFIGURATION
 
@@ -206,8 +206,8 @@ realm is not the authentication realm.
 
 =head2 NGINX
 
-Use the B<auth_request> directive to enable authentication.  Set the
-B<X-Realm> header to the authentication realm.  The realm must only contain
+Use the C<auth_request> directive to enable authentication.  Set the
+C<X-Realm> header to the authentication realm.  The realm must only contain
 ASCII characters.
 
   location /private/ {
@@ -255,7 +255,7 @@ Add your LDAP settings.
   ldap_bind_dn: CN=saslauthd,OU=Users,DC=EXAMPLE,DC=COM
   ldap_password: secret
 
-Credential caching can be enabled by passing the B<-c> switch to B<saslauthd>.
+Credential caching can be enabled by passing the B<-c> switch to saslauthd.
 
 =head3 OPERATING SYSTEMS
 
@@ -284,7 +284,7 @@ F</etc/sysconfig/saslauthd>.
   FLAGS="-c"
 
 Read the saslauthd(8) manual page for information on how to run the saslauthd
-daemon unprivileged as user saslauth.
+daemon unprivileged as user B<saslauth>.
 
   chgrp saslauth /etc/saslauthd.conf
   chmod 0640 /etc/saslauthd.conf
@@ -325,7 +325,7 @@ If you use PAM instead of LDAP, create F</etc/pam.d/nginx>.
 
 =head3 START SASLAUTHD
 
-Enable the B<saslauthd.service>.
+Enable and start the service.
 
   systemctl enable saslauthd.service
   systemctl restart saslauthd.service
@@ -348,10 +348,10 @@ and allow the daemon to use SASL.
 
 =head2 SYSTEMD
 
-Install the package libnss-systemd on Debian-based systems.
+Install the package B<libnss-systemd> on Debian-based systems.
 
-Users, who do not use "systemd" in F<nsswitch.conf>, need to omit DynamicUser
-from the service file and create a system user.
+Users, who do not use C<systemd> in F<nsswitch.conf>, need to omit
+C<DynamicUser> from the service file and create a system user.
 
   useradd -r -M -d / -s /sbin/nologin -U nginx-auth
 
@@ -359,7 +359,7 @@ Create F</etc/systemd/system/nginx-auth-saslauthd.service>.  The example below
 is for Debian-based systems.  On RPM-based systems, the group is B<nginx>
 instead of B<www-data>.  Use the supplementary group B<saslauth> on operating
 systems from Red Hat.  Other systems may not require a supplementary group to
-communicate with the B<saslauthd> daemon.
+communicate with the saslauthd daemon.
 
   [Unit]
   Description=Basic authentication with saslauthd
@@ -431,7 +431,7 @@ None known.
 =head1 SEE ALSO
 
 L<Mojolicious>, L<Mojolicious::Guides::Cookbook>, saslauthd(8),
-L<https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
+L<auth_request|https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
 
 =head1 AUTHOR
 
