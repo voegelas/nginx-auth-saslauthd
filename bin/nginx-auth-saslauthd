@@ -226,14 +226,11 @@ B<nginx> can be configured to cache authentication requests, but the
 credentials will be stored in cleartext.
 
   http {
-    ...
     proxy_cache_path /var/cache/nginx/auth_cache keys_zone=auth_cache:1m;
 
     server {
-      ...
       location = /auth {
-        ...
-        proxy_cache auth_cache
+        proxy_cache auth_cache;
         proxy_cache_key "$http_authorization";
         proxy_cache_valid 200 10m;
       }
