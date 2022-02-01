@@ -1,5 +1,3 @@
-.gitignore
-.gitlab-ci.yml
 bin/nginx-auth-saslauthd
 Changes
 CONTRIBUTING.md
