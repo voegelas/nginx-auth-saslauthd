@@ -28,9 +28,8 @@ the saslauthd daemon from [Cyrus SASL](https://www.cyrusimap.org/sasl/).
 
 Run the following commands to install the software:
 
-    perl Makefile.PL INSTALLSITESCRIPT=/usr/local/sbin \
-        INSTALLSITEMAN1DIR=/usr/local/share/man/man8 MAN1EXT=8
-    make MAN1SECTION=8
+    perl Makefile.PL
+    make
     make test
     make install
 

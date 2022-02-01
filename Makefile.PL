@@ -2,8 +2,26 @@ use strict;
 use warnings;
 
 use 5.016;
-
 use ExtUtils::MakeMaker;
+
+die "OS unsupported\n" if $^O eq 'MSWin32';
+
+package MY;
+
+sub constants {
+  my $self = shift;
+
+  my $text = $self->SUPER::constants(@_);
+  if (defined $text) {
+    $text =~ s{/bin$}{/sbin}mg;
+    $text =~ s{/man1$}{/man8}mg;
+    $text =~ s{^(MAN1(?:EXT|SECTION)\h*=\h*)1([[:alpha:]]*)$}{${1}8}mg;
+  }
+
+  return $text;
+}
+
+package main;
 
 my %WriteMakefileArgs = (
   NAME => 'App::nginx_auth_saslauthd',
@@ -15,6 +33,7 @@ my %WriteMakefileArgs = (
   EXE_FILES => [
     'bin/nginx-auth-saslauthd'
   ],
+  PM => {},
   NO_PACKLIST => 1,
   NO_PERLLOCAL => 1,
   MIN_PERL_VERSION => '5.016',
