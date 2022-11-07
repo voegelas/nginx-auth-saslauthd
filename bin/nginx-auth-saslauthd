@@ -435,7 +435,7 @@ L<auth_request|https://nginx.org/en/docs/http/ngx_http_auth_request_module.html>
 
 =head1 AUTHOR
 
-Andreas Vögele E<lt>voegelas@cpan.orgE<gt>
+Andreas Vögele E<lt>andreas@andreasvoegele.comE<gt>
 
 =head1 BUGS AND LIMITATIONS
 
@@ -444,7 +444,7 @@ HTTPS.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2017-2022 Andreas Vögele
+Copyright (C) 2017-2022 Andreas Vögele
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
