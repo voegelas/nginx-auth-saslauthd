@@ -1,9 +1,18 @@
+---
 image: voegelas/perl-devel-cover
 
-before_script:
-  - cpanm --quiet --notest --installdeps .
-
-test_job:
+test:
+  stage: test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
   script:
+    - cpanm --quiet --notest --installdeps .
     - perl Makefile.PL
     - cover -test
+
+include:
+  - remote: 'https://mirror.andreasvoegele.com/gitlab/build-packages.yaml'
+    rules:
+      - if: $BUILD_PACKAGES == "true"
