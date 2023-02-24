@@ -11,7 +11,7 @@ jobs:
   perl:
     runs-on: ubuntu-latest
     container:
-      image: voegelas/perl-devel-cover
+      image: voegelas/debian-devel
     steps:
       - uses: actions/checkout@v3
       - name: perl -V

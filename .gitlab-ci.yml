@@ -1,5 +1,5 @@
 ---
-image: voegelas/perl-devel-cover
+image: voegelas/debian-devel
 
 test:
   stage: test
