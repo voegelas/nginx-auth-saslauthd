@@ -39,7 +39,7 @@ Type the following command to see the program usage information:
 
 ## LICENSE AND COPYRIGHT
 
-Copyright (C) 2017-2022 Andreas Vögele
+Copyright (C) 2017-2023 Andreas Vögele
 
 This program is free software; you can redistribute and modify it under the
 terms of the ISC license.
