@@ -222,6 +222,8 @@ ASCII characters.
     proxy_set_header X-Realm "Restricted";
   }
 
+=head3 CACHING
+
 B<nginx> can be configured to cache authentication requests, but the
 credentials will be stored in cleartext.
 
@@ -234,6 +236,26 @@ credentials will be stored in cleartext.
         proxy_cache_key "$http_authorization";
         proxy_cache_valid 200 10m;
       }
+    }
+  }
+
+=head3 LOGGING
+
+Configure B<nginx> to log authentication failures.
+
+  http {
+    map "$status $remote_user" $auth_failed {
+      default 0;
+      "~^401 ([^-]|..)" 1;
+    }
+
+    log_format auth '$status $remote_addr "$remote_user" "$request"
+      "$http_user_agent"';
+
+    server {
+      access_log
+        syslog:server=unix:/dev/log,facility=auth,severity=warn,nohostname
+        auth if=$auth_failed;
     }
   }
 
